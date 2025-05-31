@@ -1,0 +1,10 @@
+{
+  "name": "default-settings",
+  "version": "1.0.0",
+  "title": "Default Settings",
+  "description": "",
+  "author": "protocol_1903",
+  "homepage": "https://discord.gg/K3fXMGVc4z",
+  "factorio_version": "2.0",
+  "dependencies": ["base"]
+}
