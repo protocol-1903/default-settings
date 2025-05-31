@@ -78,70 +78,78 @@ local function update_gui(entity, player)
     state = defaults.individual ~= nil,
     caption = { "ds-window.radiobutton-individual" }
   }
-  window.add{
-    type = "label",
-    style = "caption_label",
-    caption = { "ds-window.entity-settings" }
-  }
-  window.add{
-    type = "flow",
-    name = "entity_settings",
-    style = "player_input_horizontal_flow",
-    direction = "horizontal"
-  }
-  window.entity_settings.add{
-    type = "sprite-button",
-    name = "save",
-    sprite = "ds-settings-save",
-    style = "ds_action_button",
-    tooltip = { "ds-tooltip.save" }
-  }
-  window.entity_settings.add{
-    type = "sprite-button",
-    name = "load",
-    sprite = "ds-settings-load",
-    style = "ds_action_button",
-    tooltip = { "ds-tooltip.load" }
-  }.enabled = defaults.entity_settings ~= nil or defaults.basic_entity_settings ~= nil
-  window.entity_settings.add{
-    type = "sprite-button",
-    name = "delete",
-    sprite = "ds-settings-delete",
-    style = "ds_action_button",
-    tooltip = { "ds-tooltip.delete" }
-  }.enabled = defaults.entity_settings ~= nil or defaults.basic_entity_settings ~= nil
-  window.add{
-    type = "label",
-    style = "caption_label",
-    caption = { "ds-window.circuit-settings" }
-  }
-  window.add{
-    type = "flow",
-    name = "circuit_settings",
-    style = "player_input_horizontal_flow",
-    direction = "horizontal"
-  }
-  window.circuit_settings.add{
-    type = "sprite-button",
-    name = "save",
-    sprite = "ds-settings-save",
-    style = "ds_action_button",
-    tooltip = { "ds-tooltip.save" }
-  }
-  window.circuit_settings.add{
-    type = "sprite-button",
-    name = "load",
-    sprite = "ds-settings-load",
-    style = "ds_action_button",
-    tooltip = { "ds-tooltip.load" }
-  }.enabled = defaults.circuit_settings ~= nil
-  window.circuit_settings.add{
-    type = "sprite-button",
-    name = "delete",
-    sprite = "ds-settings-delete",
-    style = "ds_action_button",
-    tooltip = { "ds-tooltip.delete" }
-  }.enabled = defaults.circuit_settings ~= nil
+
+  -- only show option if entity settings supported/existant
+  if handlers[type].basic_entity_settings or handlers[type].save_entity_settings then
+    window.add{
+      type = "label",
+      style = "caption_label",
+      caption = { "ds-window.entity-settings" }
+    }
+    window.add{
+      type = "flow",
+      name = "entity_settings",
+      style = "player_input_horizontal_flow",
+      direction = "horizontal"
+    }
+    window.entity_settings.add{
+      type = "sprite-button",
+      name = "save",
+      sprite = "ds-settings-save",
+      style = "ds_action_button",
+      tooltip = { "ds-tooltip.save" }
+    }
+    window.entity_settings.add{
+      type = "sprite-button",
+      name = "load",
+      sprite = "ds-settings-load",
+      style = "ds_action_button",
+      tooltip = { "ds-tooltip.load" }
+    }.enabled = defaults.entity_settings ~= nil or defaults.basic_entity_settings ~= nil
+    window.entity_settings.add{
+      type = "sprite-button",
+      name = "delete",
+      sprite = "ds-settings-delete",
+      style = "ds_action_button",
+      tooltip = { "ds-tooltip.delete" }
+    }.enabled = defaults.entity_settings ~= nil or defaults.basic_entity_settings ~= nil
+  end
+
+  -- only show option if circuit network is supported
+  if handlers[type].circuit_settings then
+    window.add{
+      type = "label",
+      style = "caption_label",
+      caption = { "ds-window.circuit-settings" }
+    }
+    window.add{
+      type = "flow",
+      name = "circuit_settings",
+      style = "player_input_horizontal_flow",
+      direction = "horizontal"
+    }
+    window.circuit_settings.add{
+      type = "sprite-button",
+      name = "save",
+      sprite = "ds-settings-save",
+      style = "ds_action_button",
+      tooltip = { "ds-tooltip.save" }
+    }
+    window.circuit_settings.add{
+      type = "sprite-button",
+      name = "load",
+      sprite = "ds-settings-load",
+      style = "ds_action_button",
+      tooltip = { "ds-tooltip.load" }
+    }.enabled = defaults.circuit_settings ~= nil
+    window.circuit_settings.add{
+      type = "sprite-button",
+      name = "delete",
+      sprite = "ds-settings-delete",
+      style = "ds_action_button",
+      tooltip = { "ds-tooltip.delete" }
+    }.enabled = defaults.circuit_settings ~= nil
+  end
 end
 
 script.on_event(defines.events.on_built_entity, function (event)

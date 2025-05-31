@@ -39,6 +39,7 @@ handlers.save_entity_settings = function (entity, player)
     defaults.basic_entity_settings[index] = entity[index]
   end
 
+  if not handlers[type].save_entity_settings then return end
   handlers[type].save_entity_settings(entity, player)
 end
 
@@ -51,7 +52,7 @@ handlers.apply_entity_settings = function (entity, player)
     entity[index] = value
   end
 
-  if not defaults.entity_settings then return end
+  if not defaults.entity_settings or not handlers[type].apply_entity_settings then return end
   handlers[type].apply_entity_settings(entity, player)
 end
 
@@ -120,6 +121,24 @@ handlers.inserter = {
       defaults.entity_settings.filters[i] = entity.get_filter(i)
     end
   end
+}
+
+handlers.furnace = {
+  gui_type = defines.relative_gui_type.furnace_gui,
+  circuit_settings = {
+    "circuit_enable_disable",
+    "circuit_condition",
+    "connect_to_logistic_network",
+    "logistic_condition",
+
+    "circuit_read_contents",
+    "include_in_crafting",
+    "include_fuel",
+    "circuit_read_recipe_finished",
+    "circuit_recipe_finished_signal",
+    "circuit_read_working",
+    "circuit_working_signal"
+  }
 }
 
 return handlers
