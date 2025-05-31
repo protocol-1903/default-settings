@@ -82,8 +82,64 @@ handlers.apply_circuit_settings = function (entity, player)
   end
 end
 
-handlers.inserter = {
-  gui_type = defines.relative_gui_type.inserter_gui,
+-- belt speaker display panel pump
+
+-- handlers["accumulator"] = {}
+-- handlers["agricultural-tower"] = {}
+-- handlers["ammo-turret"] = {}
+-- handlers["arithmetic-combinator"] = {}
+-- handlers["artillery-turret"] = {}
+-- handlers["artillery-wagon"] = {}
+-- handlers["assembling-machine"] = {}
+-- handlers["asteroid-collector"] = {}
+-- handlers["beacon"] = {}
+-- handlers["boiler"] = {}
+-- handlers["burner-generator"] = {}
+-- handlers["car"] = {}
+-- handlers["cargo-bay"] = {}
+-- handlers["cargo-landing-pad"] = {}
+-- handlers["cargo-wagon"] = {}
+-- handlers["constant-combinator"] = {}
+-- handlers["container"] = {}
+-- handlers["decider-combinator"] = {}
+handlers["display-panel"] = {
+  circuit_settings = {
+    "messages"
+  }
+}
+-- handlers["electric-energy-interface"] = {}
+-- handlers["electric-pole"] = {}
+-- handlers["electric-turret"] = {}
+-- handlers["fluid-turret"] = {}
+-- handlers["fluid-wagon"] = {}
+
+handlers["furnace"] = {
+  circuit_settings = {
+    "circuit_enable_disable",
+    "circuit_condition",
+    "connect_to_logistic_network",
+    "logistic_condition",
+
+    "circuit_read_contents",
+    "include_in_crafting",
+    "include_fuel",
+    "circuit_read_recipe_finished",
+    "circuit_recipe_finished_signal",
+    "circuit_read_working",
+    "circuit_working_signal"
+  }
+}
+
+-- handlers["fusion-generator"] = {}
+-- handlers["fusion-reactor"] = {}
+-- handlers["gate"] = {}
+-- handlers["generator"] = {}
+-- handlers["heat-interface"] = {}
+-- handlers["infinity-cargo-wagon"] = {}
+-- handlers["infinity-container"] = {}
+-- handlers["infinity-pipe"] = {}
+
+handlers["inserter"] = {
   circuit_settings = {
     "circuit_enable_disable",
     "circuit_condition",
@@ -123,22 +179,55 @@ handlers.inserter = {
   end
 }
 
-handlers.furnace = {
-  gui_type = defines.relative_gui_type.furnace_gui,
+-- handlers["lab"] = {}
+-- handlers["lamp"] = {}
+-- handlers["land-mine"] = {}
+-- handlers["lane-splitter"] = {}
+-- handlers["linked-belt"] = {}
+-- handlers["linked-container"] = {}
+-- handlers["loader"] = {}
+-- handlers["loader-1x1"] = {}
+-- handlers["locomotive"] = {}
+-- handlers["logistic-container"] = {}
+-- handlers["market"] = {}
+-- handlers["mining-drill"] = {}
+-- handlers["offshore-pump"] = {}
+-- handlers["power-switch"] = {}
+handlers["programmable-speaker"] = {
+  circuit_settings = {
+    "circuit_condition",
+    "circuit_parameters"
+  },
+  basic_entity_settings = {
+    "parameters",
+    "alert_parameters"
+  }
+}
+-- handlers["proxy-container"] = {}
+handlers["pump"] = {
   circuit_settings = {
     "circuit_enable_disable",
     "circuit_condition",
     "connect_to_logistic_network",
     "logistic_condition",
 
-    "circuit_read_contents",
-    "include_in_crafting",
-    "include_fuel",
-    "circuit_read_recipe_finished",
-    "circuit_recipe_finished_signal",
-    "circuit_read_working",
-    "circuit_working_signal"
+    "set_filter"
   }
 }
+-- handlers["radar"] = {}
+-- handlers["rail-chain-signal"] = {}
+-- handlers["rail-signal"] = {}
+-- handlers["reactor"] = {}
+-- handlers["roboport"] = {}
+-- handlers["rocket-silo"] = {}
+-- handlers["selector-combinator"] = {}
+-- handlers["spider-vehicle"] = {}
+-- handlers["splitter"] = {}
+-- handlers["storage-tank"] = {}
+-- handlers["thruster"] = {}
+-- handlers["train-stop"] = {}
+-- handlers["transport-belt"] = {}
+-- handlers["turret"] = {}
+-- handlers["wall"] = {}
 
 return handlers

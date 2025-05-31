@@ -22,7 +22,7 @@ local function update_gui(entity, player)
   local type = entity and (entity.type == "entity-ghost" and entity.ghost_type or entity.type)
   local name = entity and (entity.type == "entity-ghost" and entity.ghost_name or entity.name)
 
-  if not entity or not handlers[type] then return end
+  if not entity or not handlers[type] or not defines.relative_gui_type[type:gsub("-", "_") .. "_gui"] then return end
 
   local defaults = handlers.defaults(entity, player)
 
@@ -36,7 +36,7 @@ local function update_gui(entity, player)
     caption = { "ds-window.frame" },
     direction = "vertical",
     anchor = {
-      gui = handlers[type].gui_type,
+      gui = defines.relative_gui_type[type:gsub("-", "_") .. "_gui"],
       position = defines.relative_gui_position.left
     }
   }.add{
