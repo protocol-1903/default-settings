@@ -61,11 +61,11 @@ local function update_gui(entity, player)
   }
   subheader.style.left_padding = 12
   subheader.style.right_padding = 12
-  subheader.add{
-    type = "label",
-    style = "caption_label",
-    caption = { "ds-window.radiobutton-label" }
-  }
+  -- subheader.add{
+  --   type = "label",
+  --   style = "caption_label",
+  --   caption = { "ds-window.radiobutton-label" }
+  -- }
   subheader.add{
     type = "radiobutton",
     name = "prototype",
