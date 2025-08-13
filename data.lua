@@ -16,6 +16,17 @@ data:extend{
     name = "ds-settings-delete",
     filename = "__base__/graphics/icons/signal/signal-trash-bin.png",
     size = 64
+  },
+  {
+    type = "custom-input",
+    name = "default-settings-build",
+    linked_game_control = "build",
+    key_sequence = ""
+  },
+  {
+    type = "simple-entity-with-owner",
+    name = "default-settings-trigger-entity",
+    icon = util.empty_icon().icon
   }
 }
 
