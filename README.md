@@ -52,4 +52,6 @@ Might do eventually (more likely if requested):
 - Mod support: allow 'alt' versions of the same entity to use the same settings, for when a mod uses scripts to replace virtually the same entity
 - Manager GUI to show the current settings, and allowing you to change them.
 
+Requested by and thumbnail created by JigSaW on Discord.
+
 If you have a mod idea, let me know and I can look into it.
