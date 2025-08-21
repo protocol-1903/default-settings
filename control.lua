@@ -254,16 +254,20 @@ script.on_event(defines.events.on_player_cursor_stack_changed, function (event)
   end
 end)
 
-script.on_event(defines.events.on_selected_entity_changed, function (event)
-  local entity = game.get_player(event.player_index).selected
-  -- if we're monitoring that player and there is a handler for hovered entity
-  if entity and handlers[entity.type] and storage.monitor[event.player_index] then
-    storage.monitor[event.player_index][entity.get_wire_connector(defines.wire_connector_id.circuit_green, true).connection_count + entity.get_wire_connector(defines.wire_connector_id.circuit_red, true).connection_count == 0 and "disconnected" or "connected"][entity.unit_number] = entity
-  end
-end)
+-- script.on_event(defines.events.on_selected_entity_changed, function (event)
+--   local entity = game.get_player(event.player_index).selected
+--   -- if we're monitoring that player and there is a handler for hovered entity
+--   if entity and handlers[entity.type] and storage.monitor[event.player_index] then
+--     storage.monitor[event.player_index][entity.get_wire_connector(defines.wire_connector_id.circuit_green, true).connection_count + entity.get_wire_connector(defines.wire_connector_id.circuit_red, true).connection_count == 0 and "disconnected" or "connected"][entity.unit_number] = entity
+--   end
+-- end)
 
 script.on_event("default-settings-build", function (event)
   if not storage.monitor[event.player_index] then return end
+  local player = game.get_player(event.player_index)
+  if player.selected then
+    storage.monitor[event.player_index][player.selected.get_wire_connector(defines.wire_connector_id.circuit_green, true).connection_count + player.selected.get_wire_connector(defines.wire_connector_id.circuit_red, true).connection_count == 0 and "disconnected" or "connected"][player.selected.unit_number] = player.selected
+  end
   local trigger = game.surfaces[1].create_entity{name = "default-settings-trigger-entity", position = {0,0}}
   storage.deathrattles = {}
   storage.deathrattles[script.register_on_object_destroyed(trigger)] = event.player_index
