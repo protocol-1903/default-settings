@@ -27,6 +27,16 @@ data:extend{
     type = "simple-entity-with-owner",
     name = "default-settings-trigger-entity",
     icon = util.empty_icon().icon
+  },
+  {
+    type = "shortcut",
+    name = "default-settings-show-gui",
+    icon = "__default-settings__/icons/shortcut.png",
+    icon_size = 32,
+    small_icon = "__default-settings__/icons/shortcut.png",
+    small_icon_size = 32,
+    action = "lua",
+    toggleable = true
   }
 }
 

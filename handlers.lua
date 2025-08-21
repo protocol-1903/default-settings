@@ -301,7 +301,6 @@ handlers["inserter"] = {
     end
   end
 }
--- handlers["lab"] = {}
 -- handlers["lamp"] = {}
 -- handlers["lane-splitter"] = {}
 -- handlers["loader"] = {}
@@ -320,7 +319,6 @@ handlers["programmable-speaker"] = {
     "alert_parameters"
   }
 }
--- handlers["proxy-container"] = {}
 handlers["pump"] = {
   circuit_settings = {
     "circuit_enable_disable",

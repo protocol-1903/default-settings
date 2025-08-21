@@ -35,14 +35,16 @@ local function update_gui(entity, player_index)
   local name = entity and (entity.type == "entity-ghost" and entity.ghost_name or entity.name)
   local player = game.get_player(player_index)
 
-  if not entity or not handlers[type] or not defines.relative_gui_type[type:gsub("-", "_") .. "_gui"] then return end
-
-  local defaults = handlers.defaults(entity, player_index, false)
-
   if player.gui.relative["default-settings"] then
     player.gui.relative["default-settings"].destroy()
   end
 
+  if not player.is_shortcut_toggled("default-settings-show-gui") then return end
+  
+  if not entity or not handlers[type] or not defines.relative_gui_type[type:gsub("-", "_") .. "_gui"] then return end
+  
+  local defaults = handlers.defaults(entity, player_index, false)
+  
   local window = player.gui.relative.add{
     type = "frame",
     name = "default-settings",
@@ -297,5 +299,16 @@ script.on_event(defines.events.on_object_destroyed, function (event)
         handlers.apply_circuit_settings(entity, player_index)
       end
     end
+  end
+end)
+
+script.on_event(defines.events.on_lua_shortcut, function (event)
+  log(event.prototype_name)
+  if event.prototype_name == "default-settings-show-gui" then
+    game.get_player(event.player_index).set_shortcut_toggled(
+      "default-settings-show-gui",
+      not game.get_player(event.player_index).is_shortcut_toggled("default-settings-show-gui")
+    )
+    update_gui(game.get_player(event.player_index).opened, event.player_index)
   end
 end)
