@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.0.1
+Date: 2025-08-21
+  Changes:
+    - Optimized circuit network search code to only apply to entities that are added to a temporary network
+  Bugfixes:
+    - Fixed a crash when clicking an entity that does not support the circuit network
+---------------------------------------------------------------------------------------------------
 Version: 1.0.0
 Date: 2025-08-21
   Features:
