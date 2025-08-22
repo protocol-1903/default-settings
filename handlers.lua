@@ -49,7 +49,7 @@ handlers.defaults = function (entity, player_index)
 end
 
 handlers.save_entity_settings = function (entity, player_index)
-  local defaults = handlers.defaults(entity, player_index, false)
+  local defaults = handlers.defaults(entity, player_index)
   if not defaults then return end
   local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
   defaults.basic_entity_settings = {}
@@ -64,7 +64,7 @@ handlers.save_entity_settings = function (entity, player_index)
 end
 
 handlers.apply_entity_settings = function (entity, player_index)
-  local defaults = handlers.defaults(entity, player_index, false)
+  local defaults = handlers.defaults(entity, player_index)
   if not defaults then return end
   local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
 
@@ -78,7 +78,7 @@ handlers.apply_entity_settings = function (entity, player_index)
 end
 
 handlers.save_circuit_settings = function (entity, player_index)
-  local defaults = handlers.defaults(entity, player_index, false)
+  local defaults = handlers.defaults(entity, player_index)
   if not defaults then return end
   local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
   defaults.circuit_settings = {}
@@ -93,7 +93,7 @@ handlers.save_circuit_settings = function (entity, player_index)
 end
 
 handlers.apply_circuit_settings = function (entity, player_index)
-  local defaults = handlers.defaults(entity, player_index, false)
+  local defaults = handlers.defaults(entity, player_index)
   if not defaults then return end
   
   -- load relevant circuit settings
@@ -107,7 +107,7 @@ handlers.apply_circuit_settings = function (entity, player_index)
 end
 
 handlers.clear_circuit_settings = function (entity, player_index)
-  local defaults = handlers.defaults(entity, player_index, false)
+  local defaults = handlers.defaults(entity, player_index)
   if not defaults then return end
   local control_behavior = entity.get_or_create_control_behavior(true)
   if control_behavior then
@@ -131,7 +131,7 @@ end
 
 -- also returns false if no defaults exist
 handlers.is_custom_default = function (entity, player_index)
-  local defaults = handlers.defaults(entity, player_index, false)
+  local defaults = handlers.defaults(entity, player_index)
   if not defaults.circuit_settings then return false end
   local control_behavior = entity.get_or_create_control_behavior()
   -- return handlers.compare(defaults.circuit_settings, control_behavior)

@@ -235,11 +235,11 @@ script.on_event(defines.events.on_pre_circuit_wire_added, function (event)
   local source_base_id = event.destination_connector_id - event.destination_connector_id % 2
   local destination = event.destination
   local destination_base_id = event.destination_connector_id - event.destination_connector_id % 2
-  if source.get_wire_connector(source_base_id, true).connection_count + source.get_wire_connector(source_base_id + 1, true).connection_count == 0 and handlers.defaults(source, event.player_index).circuit_settings and handlers.is_default(source) then
-    handlers.apply_circuit_settings(source, player_index)
+  if source.get_wire_connector(source_base_id, true).connection_count + source.get_wire_connector(source_base_id - 1, true).connection_count == 0 and handlers.defaults(source, event.player_index).circuit_settings and handlers.is_default(source) then
+    handlers.apply_circuit_settings(source, event.player_index)
   end
-  if destination.get_wire_connector(destination_base_id, true).connection_count + destination.get_wire_connector(destination_base_id + 1, true).connection_count == 0 and handlers.defaults(destination, event.player_index).circuit_settings and handlers.is_default(destination) then
-    handlers.apply_circuit_settings(destination, player_index)
+  if destination.get_wire_connector(destination_base_id, true).connection_count + destination.get_wire_connector(destination_base_id - 1, true).connection_count == 0 and handlers.defaults(destination, event.player_index).circuit_settings and handlers.is_default(destination) then
+    handlers.apply_circuit_settings(destination, event.player_index)
   end
 end)
 
@@ -249,11 +249,11 @@ script.on_event(defines.events.on_circuit_wire_removed, function (event)
   local source_base_id = event.destination_connector_id - event.destination_connector_id % 2
   local destination = event.destination
   local destination_base_id = event.destination_connector_id - event.destination_connector_id % 2
-  if source.get_wire_connector(source_base_id, true).connection_count + source.get_wire_connector(source_base_id + 1, true).connection_count == 0 and handlers.is_custom_default(source, player_index) then
-    handlers.clear_circuit_settings(source, player_index)
+  if source.get_wire_connector(source_base_id, true).connection_count + source.get_wire_connector(source_base_id - 1, true).connection_count == 0 and handlers.is_custom_default(source, event.player_index) then
+    handlers.clear_circuit_settings(source, event.player_index)
   end
-  if destination.get_wire_connector(destination_base_id, true).connection_count + destination.get_wire_connector(destination_base_id + 1, true).connection_count == 0 and handlers.is_custom_default(destination, player_index) then
-    handlers.clear_circuit_settings(destination, player_index)
+  if destination.get_wire_connector(destination_base_id, true).connection_count + destination.get_wire_connector(destination_base_id - 1, true).connection_count == 0 and handlers.is_custom_default(destination, event.player_index) then
+    handlers.clear_circuit_settings(destination, event.player_index)
   end
 end)
 
