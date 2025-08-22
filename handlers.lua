@@ -19,12 +19,11 @@ handlers.compare = function (data1, data2)
   return true
 end
 
-handlers.defaults = function (entity, player_index, create)
+handlers.defaults = function (entity, player_index)
   local name = entity.type == "entity-ghost" and entity.ghost_name or entity.name
   local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
 
   if not handlers[type] then return end
-  if create == nil then create = true end
 
   -- create empty table if nil
   if not storage.player_settings[player_index] then
@@ -41,24 +40,10 @@ handlers.defaults = function (entity, player_index, create)
   if not storage.player_settings[player_index][type] then
     storage.player_settings[player_index][type] = {}
   end
-
-  -- if create and not storage.player_settings[player_index][type].circuit_settings then
-  --   storage.player_settings[player_index][type].circuit_settings = {}
-  --   for _, index in pairs(handlers[type]) do
-  --     storage.player_settings[player_index][type].circuit_settings[index] = handlers.default_state(index, type) or false
-  --   end
-  -- end
   
   if not storage.player_settings[player_index].individual[name] then
     storage.player_settings[player_index].individual[name] = {individual = false}
   end
-
-  -- if create and not storage.player_settings[player_index].individual[name].circuit_settings then
-  --   storage.player_settings[player_index].individual[name].circuit_settings = {}
-  --   for _, index in pairs(handlers[type]) do
-  --     storage.player_settings[player_index].individual[name].circuit_settings[index] = handlers.default_state(index, type) or false
-  --   end
-  -- end
 
   return storage.player_settings[player_index].individual[name].individual and storage.player_settings[player_index].individual[name] or storage.player_settings[player_index][type]
 end

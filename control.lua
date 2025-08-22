@@ -1,18 +1,12 @@
 script.on_init(function (event)
   storage = {
-    player_settings = {},
-    monitor = {},
-    deathrattles = {},
-    last_clicked = {}
+    player_settings = {}
   }
 end)
 
 script.on_configuration_changed(function (event)
   storage = {
-    player_settings = storage.player_settings or {},
-    monitor = storage.monitor or {},
-    deathrattles = storage.deathrattles or {},
-    last_clicked = storage.last_clicked or {}
+    player_settings = storage.player_settings or {}
   }
 end)
 
@@ -45,7 +39,7 @@ local function update_gui(entity, player_index)
   
   if not entity or not handlers[type] or not defines.relative_gui_type[type:gsub("-", "_") .. "_gui"] then return end
   
-  local defaults = handlers.defaults(entity, player_index, false)
+  local defaults = handlers.defaults(entity, player_index)
   
   local window = player.gui.relative.add{
     type = "frame",
@@ -223,7 +217,7 @@ script.on_event(defines.events.on_gui_click, function (event)
       handlers.apply_circuit_settings(entity, event.player_index)
     end
   elseif element.name == "delete" then
-    local defaults = handlers.defaults(entity, event.player_index, false)
+    local defaults = handlers.defaults(entity, event.player_index)
     if parent == "entity_settings" then
       defaults.entity_settings = nil
       defaults.basic_entity_settings = nil
@@ -235,71 +229,31 @@ script.on_event(defines.events.on_gui_click, function (event)
   update_gui(entity, event.player_index)
 end)
 
-script.on_event(defines.events.on_player_cursor_stack_changed, function (event)
-  local player = game.get_player(event.player_index)
-  local item = player.cursor_stack
-  if player.is_cursor_empty() or not item or not item.valid_for_read or (item.name ~= "green-wire" and item.name ~= "red-wire") then
-    -- remove from monitor
-    storage.monitor[event.player_index] = nil
-  else
-    storage.monitor[event.player_index] = {
-      connected = {},
-      disconnected = {}
-    }
-    -- if player is currently hovering over an entity, check if it should be added to check
-    if player.selected and handlers[player.selected] then
-      storage.monitor[event.player_index][
-      player.selected.get_wire_connector(defines.wire_connector_id.circuit_green, true).connection_count +
-      player.selected.get_wire_connector(defines.wire_connector_id.circuit_red, true).connection_count
-      == 0 and "disconnected" or "connected"][player.selected.unit_number] = player.selected
-    end
+---@param event EventData.on_circuit_wire_added
+script.on_event(defines.events.on_pre_circuit_wire_added, function (event)
+  local source = event.source
+  local source_base_id = event.destination_connector_id - event.destination_connector_id % 2
+  local destination = event.destination
+  local destination_base_id = event.destination_connector_id - event.destination_connector_id % 2
+  if source.get_wire_connector(source_base_id, true).connection_count + source.get_wire_connector(source_base_id + 1, true).connection_count == 0 and handlers.defaults(source, event.player_index).circuit_settings and handlers.is_default(source) then
+    handlers.apply_circuit_settings(source, player_index)
+  end
+  if destination.get_wire_connector(destination_base_id, true).connection_count + destination.get_wire_connector(destination_base_id + 1, true).connection_count == 0 and handlers.defaults(destination, event.player_index).circuit_settings and handlers.is_default(destination) then
+    handlers.apply_circuit_settings(destination, player_index)
   end
 end)
 
-script.on_event("default-settings-build", function (event)
-  if not storage.monitor[event.player_index] then return end
-  local player = game.get_player(event.player_index)
-  if player.selected and player.selected.prototype.get_max_circuit_wire_distance(player.selected.quality) ~= 0 then
-    if storage.last_clicked[event.player_index] and player.selected ~= storage.last_clicked[event.player_index] and player.selected.can_wires_reach(storage.last_clicked[event.player_index]) then
-      storage.monitor[event.player_index][player.selected.get_wire_connector(defines.wire_connector_id.circuit_green, true).connection_count + player.selected.get_wire_connector(defines.wire_connector_id.circuit_red, true).connection_count == 0 and "disconnected" or "connected"][player.selected.unit_number] = player.selected
-      local trigger = game.surfaces[1].create_entity{name = "default-settings-trigger-entity", position = {0,0}}
-      storage.deathrattles = {}
-      storage.deathrattles[script.register_on_object_destroyed(trigger)] = event.player_index
-      trigger.destroy()
-    end
-    storage.last_clicked[event.player_index] = player.selected
+---@param event EventData.on_circuit_wire_removed
+script.on_event(defines.events.on_circuit_wire_removed, function (event)
+  local source = event.source
+  local source_base_id = event.destination_connector_id - event.destination_connector_id % 2
+  local destination = event.destination
+  local destination_base_id = event.destination_connector_id - event.destination_connector_id % 2
+  if source.get_wire_connector(source_base_id, true).connection_count + source.get_wire_connector(source_base_id + 1, true).connection_count == 0 and handlers.is_custom_default(source, player_index) then
+    handlers.clear_circuit_settings(source, player_index)
   end
-end)
-
-script.on_event(defines.events.on_object_destroyed, function (event)
-  local player_index = storage.deathrattles[event.registration_number]
-  if not player_index then return end
-  storage.deathrattles[event.registration_number] = nil
-  local metadata = storage.monitor[player_index]
-  for unit_number, entity in pairs(metadata.connected) do
-    -- check for it to be disconnected
-    if entity.get_wire_connector(defines.wire_connector_id.circuit_green, true).connection_count + entity.get_wire_connector(defines.wire_connector_id.circuit_red, true).connection_count == 0 then
-      storage.monitor[player_index].connected[unit_number] = nil
-      storage.monitor[player_index].disconnected[unit_number] = entity
-
-      -- if entity is custom but unchanged, clear settings
-      if handlers.is_custom_default(entity, player_index) then
-        game.print("clear settings", {skip = defines.print_skip.never})
-        handlers.clear_circuit_settings(entity, player_index)
-      end
-    end
-  end
-  for unit_number, entity in pairs(metadata.disconnected) do
-    -- check for it to be connected
-    if entity.get_wire_connector(defines.wire_connector_id.circuit_green, true).connection_count + entity.get_wire_connector(defines.wire_connector_id.circuit_red, true).connection_count ~= 0 then
-      storage.monitor[player_index].disconnected[unit_number] = nil
-      storage.monitor[player_index].connected[unit_number] = entity
-      -- if entity is vanilla and settings existent, then apply
-      if handlers.defaults(entity, player_index, false).circuit_settings and handlers.is_default(entity) then
-        game.print("apply settings", {skip = defines.print_skip.never})
-        handlers.apply_circuit_settings(entity, player_index)
-      end
-    end
+  if destination.get_wire_connector(destination_base_id, true).connection_count + destination.get_wire_connector(destination_base_id + 1, true).connection_count == 0 and handlers.is_custom_default(destination, player_index) then
+    handlers.clear_circuit_settings(destination, player_index)
   end
 end)
 
