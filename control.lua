@@ -232,9 +232,9 @@ end)
 ---@param event EventData.on_circuit_wire_added
 script.on_event(defines.events.on_pre_circuit_wire_added, function (event)
   local source = event.source
-  local source_base_id = event.destination_connector_id - event.destination_connector_id % 2
   local destination = event.destination
-  local destination_base_id = event.destination_connector_id - event.destination_connector_id % 2
+  local source_base_id = event.source_connector_id - (event.source_connector_id + 1) % 2 + 1
+  local destination_base_id = event.destination_connector_id - (event.destination_connector_id + 1) % 2 + 1
   if source.get_wire_connector(source_base_id, true).connection_count + source.get_wire_connector(source_base_id - 1, true).connection_count == 0 and handlers.defaults(source, event.player_index).circuit_settings and handlers.is_default(source) then
     handlers.apply_circuit_settings(source, event.player_index)
   end
@@ -246,9 +246,9 @@ end)
 ---@param event EventData.on_circuit_wire_removed
 script.on_event(defines.events.on_circuit_wire_removed, function (event)
   local source = event.source
-  local source_base_id = event.destination_connector_id - event.destination_connector_id % 2
   local destination = event.destination
-  local destination_base_id = event.destination_connector_id - event.destination_connector_id % 2
+  local source_base_id = event.source_connector_id - (event.source_connector_id + 1) % 2 + 1
+  local destination_base_id = event.destination_connector_id - (event.destination_connector_id + 1) % 2 + 1
   if source.get_wire_connector(source_base_id, true).connection_count + source.get_wire_connector(source_base_id - 1, true).connection_count == 0 and handlers.is_custom_default(source, event.player_index) then
     handlers.clear_circuit_settings(source, event.player_index)
   end

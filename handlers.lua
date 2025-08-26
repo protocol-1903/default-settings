@@ -21,7 +21,7 @@ handlers.defaults = function (entity, player_index)
   local name = entity.type == "entity-ghost" and entity.ghost_name or entity.name
   local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
 
-  if not handlers[type] then return end
+  if not handlers[type] then return {} end
 
   -- create empty table if nil
   if not storage.player_settings[player_index] then
@@ -35,15 +35,17 @@ handlers.defaults = function (entity, player_index)
     }
   end
 
-  if not storage.player_settings[player_index][type] then
-    storage.player_settings[player_index][type] = {}
+  metadata = storage.player_settings[player_index]
+
+  if not metadata[type] then
+    metadata[type] = {}
   end
   
-  if not storage.player_settings[player_index].individual[name] then
-    storage.player_settings[player_index].individual[name] = {individual = false}
+  if not metadata.individual[name] then
+    metadata.individual[name] = {individual = false}
   end
 
-  return storage.player_settings[player_index].individual[name].individual and storage.player_settings[player_index].individual[name] or storage.player_settings[player_index][type] or {}
+  return metadata.individual[name].individual and metadata.individual[name] or metadata[type]
 end
 
 handlers.save_entity_settings = function (entity, player_index)

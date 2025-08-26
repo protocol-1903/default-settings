@@ -3,6 +3,9 @@ Version: 1.0.4
 Date: 2025-08-26
   Changes:
     - Removed log file spam from handlers
+  Bugfixes:
+    - Fixed a crash when using red wires
+    - Fixed a crash when connecting to a non-supported entity
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.3
 Date: 2025-08-22
