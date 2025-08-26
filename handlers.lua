@@ -3,8 +3,6 @@ local handlers = handlers or {}
 -- deep compare for equality, works for any data type
 handlers.compare = function (data1, data2)
   if type(data1) ~= type(data2) or type(data1) ~= "table" and data1 ~= data2 then
-    log(type(data1))
-    log(type(data2))
     return false
   elseif type(data1) == "table" then
     local checked_indices = {fulfilled = true}
@@ -45,7 +43,7 @@ handlers.defaults = function (entity, player_index)
     storage.player_settings[player_index].individual[name] = {individual = false}
   end
 
-  return storage.player_settings[player_index].individual[name].individual and storage.player_settings[player_index].individual[name] or storage.player_settings[player_index][type]
+  return storage.player_settings[player_index].individual[name].individual and storage.player_settings[player_index].individual[name] or storage.player_settings[player_index][type] or {}
 end
 
 handlers.save_entity_settings = function (entity, player_index)
@@ -100,7 +98,6 @@ handlers.apply_circuit_settings = function (entity, player_index)
   local control_behavior = entity.get_or_create_control_behavior()
   if control_behavior then
     for index, value in pairs(defaults.circuit_settings or {}) do
-      log(index)
       control_behavior[index] = value
     end
   end
