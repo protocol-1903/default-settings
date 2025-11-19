@@ -26,6 +26,7 @@ Not yet supported:
 - fusion reactor
 - generator
 - lamp
+- splitter (and lane splitter)
 - loader (and loader 1x1)
 - logistic container
 - mining drill
@@ -40,13 +41,13 @@ Not yet supported:
 - turret
 - wall
 
-No support intended:
+No support intended, for one reason or another:
 - heat interface
 - infinity container
 - infinity pipe
-- lane splitter
-- splitter
 
+TODO:
+- undo/redo support (yayyyy....)
 
 Might do eventually (more likely if requested):
 - Mod support: allow 'alt' versions of the same entity to use the same settings, for when a mod uses scripts to replace virtually the same entity

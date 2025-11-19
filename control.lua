@@ -164,7 +164,13 @@ local function update_gui(entity, player_index)
 end
 
 script.on_event(defines.events.on_built_entity, function (event)
-  handlers.apply_entity_settings(event.entity, event.player_index)
+  if handlers.is_default(event.entity) then
+    handlers.apply_entity_settings(event.entity, event.player_index)
+  end
+end)
+
+script.on_event(defines.events.on_player_setup_blueprint, function (event)
+
 end)
 
 script.on_event(defines.events.on_gui_opened, function (event)
@@ -236,10 +242,10 @@ script.on_event(defines.events.on_pre_circuit_wire_added, function (event)
   local destination = event.destination
   local source_base_id = event.source_connector_id - (event.source_connector_id + 1) % 2 + 1
   local destination_base_id = event.destination_connector_id - (event.destination_connector_id + 1) % 2 + 1
-  if source.get_wire_connector(source_base_id, true).connection_count + source.get_wire_connector(source_base_id - 1, true).connection_count == 0 and handlers.defaults(source, event.player_index).circuit_settings and handlers.is_default(source) then
+  if source.get_wire_connector(source_base_id, true).connection_count + source.get_wire_connector(source_base_id - 1, true).connection_count == 0 and handlers.defaults(source, event.player_index).circuit_settings and handlers.is_circuit_default(source) then
     handlers.apply_circuit_settings(source, event.player_index)
   end
-  if destination.get_wire_connector(destination_base_id, true).connection_count + destination.get_wire_connector(destination_base_id - 1, true).connection_count == 0 and handlers.defaults(destination, event.player_index).circuit_settings and handlers.is_default(destination) then
+  if destination.get_wire_connector(destination_base_id, true).connection_count + destination.get_wire_connector(destination_base_id - 1, true).connection_count == 0 and handlers.defaults(destination, event.player_index).circuit_settings and handlers.is_circuit_default(destination) then
     handlers.apply_circuit_settings(destination, event.player_index)
   end
 end)
@@ -251,11 +257,23 @@ script.on_event(defines.events.on_circuit_wire_removed, function (event)
   local destination = event.destination
   local source_base_id = event.source_connector_id - (event.source_connector_id + 1) % 2 + 1
   local destination_base_id = event.destination_connector_id - (event.destination_connector_id + 1) % 2 + 1
-  if source.get_wire_connector(source_base_id, true).connection_count + source.get_wire_connector(source_base_id - 1, true).connection_count == 0 and handlers.is_custom_default(source, event.player_index) then
+  if source.get_wire_connector(source_base_id, true).connection_count + source.get_wire_connector(source_base_id - 1, true).connection_count == 0 and handlers.is_circuit_custom_default(source, event.player_index) then
     handlers.clear_circuit_settings(source, event.player_index)
   end
-  if destination.get_wire_connector(destination_base_id, true).connection_count + destination.get_wire_connector(destination_base_id - 1, true).connection_count == 0 and handlers.is_custom_default(destination, event.player_index) then
+  if destination.get_wire_connector(destination_base_id, true).connection_count + destination.get_wire_connector(destination_base_id - 1, true).connection_count == 0 and handlers.is_circuit_custom_default(destination, event.player_index) then
     handlers.clear_circuit_settings(destination, event.player_index)
+  end
+end)
+
+-- handle the case where one entity was removed (this is ignored in the previous handler)
+---@param event EventData.on_circuit_network_destroyed
+script.on_event(defines.events.on_circuit_network_destroyed, function (event)
+  if not event.player_index then return end
+  if event.source and event.source.get_wire_connector(event.source_connector_id - (event.source_connector_id + 1) % 2 + 1, true).connection_count == 0 then
+    handlers.clear_circuit_settings(event.source, event.player_index)
+  end
+  if event.destination and event.destination.get_wire_connector(event.destination_connector_id - (event.destination_connector_id + 1) % 2 + 1, true).connection_count == 0 then
+    handlers.clear_circuit_settings(event.destination, event.player_index)
   end
 end)
 

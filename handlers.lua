@@ -1,17 +1,17 @@
 local handlers = handlers or {}
 
 -- deep compare for equality, works for any data type
-handlers.compare = function (data1, data2)
+handlers.equal = function (data1, data2)
   if type(data1) ~= type(data2) or type(data1) ~= "table" and data1 ~= data2 then
     return false
   elseif type(data1) == "table" then
     local checked_indices = {fulfilled = true}
     for index, data in pairs(data1) do
-      if not checked_indices[index] and not handlers.compare(data, data2[index]) then return false end
+      if not checked_indices[index] and not handlers.equal(data, data2[index]) then return false end
       checked_indices[index] = true
     end
     for index, data in pairs(data2) do
-      if not checked_indices[index] and not handlers.compare(data, data1[index]) then return false end
+      if not checked_indices[index] and not handlers.equal(data, data1[index]) then return false end
     end
   end
   return true
@@ -55,7 +55,7 @@ handlers.save_entity_settings = function (entity, player_index)
   defaults.basic_entity_settings = {}
 
   -- save basic settings (R/W values)
-  for _, index in pairs(handlers[type].basic_entity_settings) do
+  for index in pairs(handlers[type].basic_entity_settings) do
     defaults.basic_entity_settings[index] = entity[index]
   end
 
@@ -75,6 +75,18 @@ handlers.apply_entity_settings = function (entity, player_index)
 
   if not defaults.entity_settings or not handlers[type].apply_entity_settings then return end
   handlers[type].apply_entity_settings(entity, player_index)
+end
+
+-- vanilla settings
+handlers.is_default = function (entity)
+  local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
+
+  -- save basic settings (R/W values)
+  for index, default in pairs(handlers[type].basic_entity_settings or {}) do
+    if not handlers.equal(default, entity[index]) then return false end
+  end
+
+  return handlers[type].is_default and handlers[type].is_default(entity) or true
 end
 
 handlers.save_circuit_settings = function (entity, player_index)
@@ -111,32 +123,32 @@ handlers.clear_circuit_settings = function (entity, player_index)
   local control_behavior = entity.get_or_create_control_behavior(true)
   if control_behavior then
     for index, value in pairs(defaults.circuit_settings or {}) do
-      control_behavior[index] = handlers.default_state(index, type) or false
+      control_behavior[index] = handlers.default_circuit_condition(index, type) or false
     end
   end
 end
 
--- vanilla settings
-handlers.is_default = function (entity)
+-- vanilla circuit settings
+handlers.is_circuit_default = function (entity)
   local control_behavior = entity.get_or_create_control_behavior()
   local prototype = entity.type == "entity-ghost" and entity.ghost_type or entity.type
   if handlers[prototype] and control_behavior then
     for _, index in pairs(handlers[prototype].circuit_settings or {}) do
-      if not handlers.compare(handlers.default_state(index, prototype), control_behavior[index]) then return false end
+      if not handlers.equal(handlers.default_circuit_condition(index, prototype), control_behavior[index]) then return false end
     end
   end
   return true
 end
 
--- also returns false if no defaults exist
-handlers.is_custom_default = function (entity, player_index)
+-- also returns false if no defaults exist (circuit settings)
+handlers.is_circuit_custom_default = function (entity, player_index)
   local defaults = handlers.defaults(entity, player_index)
   if not defaults.circuit_settings then return false end
   local control_behavior = entity.get_or_create_control_behavior()
   -- return handlers.compare(defaults.circuit_settings, control_behavior)
   if control_behavior then
     for index, value in pairs(defaults.circuit_settings or {}) do
-      if not handlers.compare(value, control_behavior[index]) then return false end
+      if not handlers.equal(value, control_behavior[index]) then return false end
     end
   end
   return true
@@ -144,7 +156,7 @@ end
 
 -- default state for circuit settings, if anything is amiss it will be overridden
 -- these are exceptions, "true" default is off/false
-handlers.default_state = function(index, type)
+handlers.default_circuit_condition = function(index, type)
   if index == "circuit_condition" or index == "logistic_condition" or index == "ignore_unlisted_targets_condition" then
     return {comparator = "<", constant = 0}
   elseif index == "include_in_crafting" or index == "open_gate" then
@@ -260,10 +272,10 @@ handlers["inserter"] = {
     "circuit_stack_control_signal"
   },
   basic_entity_settings = {
-    "use_filters",
-    "inserter_stack_size_override",
-    "inserter_filter_mode",
-    "inserter_spoil_priority"
+    use_filters = false,
+    inserter_stack_size_override = 0,
+    inserter_filter_mode = "whitelist",
+    inserter_spoil_priority = "none"
   },
   apply_entity_settings = function (entity, player_index)
     local defaults = handlers.defaults(entity, player_index)
@@ -283,6 +295,12 @@ handlers["inserter"] = {
     for i = 1, entity.filter_slot_count do
       defaults.entity_settings.filters[i] = entity.get_filter(i)
     end
+  end,
+  is_default = function (entity)
+    for i = 1, entity.filter_slot_count do
+      if entity.get_filter(i) then return false end
+    end
+    return true
   end
 }
 -- handlers["lamp"] = {}
@@ -299,8 +317,17 @@ handlers["programmable-speaker"] = {
     "circuit_parameters"
   },
   basic_entity_settings = {
-    "parameters",
-    "alert_parameters"
+    parameters = {
+      allow_polyphony = false,
+      playback_mode = "local",
+      playback_volume = 1,
+      volume_controlled_by_signal = false
+    },
+    alert_parameters = {
+      alert_message = "",
+      show_alert = false,
+      show_on_map = true
+    }
   }
 }
 handlers["pump"] = {
