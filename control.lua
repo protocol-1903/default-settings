@@ -252,7 +252,7 @@ end)
 
 ---@param event EventData.on_circuit_wire_removed
 script.on_event(defines.events.on_circuit_wire_removed, function (event)
-  if not event.player_index then return end
+  if not event.player_index or not event.source or not event.destination then return end
   local source = event.source
   local destination = event.destination
   local source_base_id = event.source_connector_id - (event.source_connector_id + 1) % 2 + 1
