@@ -81,6 +81,8 @@ end
 handlers.is_default = function (entity)
   local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
 
+  if not handlers[type] then return false end
+
   -- save basic settings (R/W values)
   for index, default in pairs(handlers[type].basic_entity_settings or {}) do
     if not handlers.equal(default, entity[index]) then return false end

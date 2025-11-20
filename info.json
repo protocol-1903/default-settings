@@ -1,6 +1,6 @@
 {
   "name": "default-settings",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "title": "Default Settings",
   "description": "Allows you to save alternate default setting states for the circuit and entity settings. Requested by JigSaW on Discord.",
   "author": "protocol_1903",
