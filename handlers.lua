@@ -1,3 +1,5 @@
+---@diagnostic disable: no-unknown
+---@diagnostic disable-next-line: undefined-global
 local handlers = handlers or {}
 
 -- deep compare for equality, works for any data type
@@ -35,7 +37,7 @@ handlers.defaults = function (entity, player_index)
     }
   end
 
-  metadata = storage.player_settings[player_index]
+  local metadata = storage.player_settings[player_index]
 
   if not metadata[type] then
     metadata[type] = {}
@@ -46,6 +48,14 @@ handlers.defaults = function (entity, player_index)
   end
 
   return metadata.individual[name].individual and metadata.individual[name] or metadata[type]
+end
+
+handlers.enable_individual_settings = function (entity, player_index)
+  storage.player_settings[player_index].individual[entity.type == "entity-ghost" and entity.ghost_name or entity.name].individual = true
+end
+
+handlers.disable_individual_settings = function (entity, player_index)
+  storage.player_settings[player_index].individual[entity.type == "entity-ghost" and entity.ghost_name or entity.name].individual = false
 end
 
 handlers.save_entity_settings = function (entity, player_index)
@@ -67,7 +77,7 @@ handlers.apply_entity_settings = function (entity, player_index)
   local defaults = handlers.defaults(entity, player_index)
   if not defaults then return end
   local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
-
+  
   -- apply basic settings (R/W values)
   for index, value in pairs(defaults.basic_entity_settings or {}) do
     entity[index] = value
@@ -75,6 +85,23 @@ handlers.apply_entity_settings = function (entity, player_index)
 
   if not defaults.entity_settings or not handlers[type].apply_entity_settings then return end
   handlers[type].apply_entity_settings(entity, player_index)
+end
+
+handlers.delete_entity_settings = function (entity, player_index)
+  local defaults = handlers.defaults(entity, player_index)
+  if not defaults then return end
+  defaults.basic_entity_settings = nil
+  defaults.entity_settings = nil
+end
+
+handlers.clear_entity_settings = function (entity, player_index)
+  local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
+  if not handlers[type] then return end
+  for index, value in pairs(handlers[type].basic_entity_settings) do
+    entity[index] = value
+  end
+  if not handlers[type].clear_entity_settings then return end
+  handlers[type].clear_entity_settings(entity, player_index)
 end
 
 -- vanilla settings
@@ -119,24 +146,28 @@ handlers.apply_circuit_settings = function (entity, player_index)
   end
 end
 
-handlers.clear_circuit_settings = function (entity, player_index)
+handlers.delete_circuit_settings = function (entity, player_index)
   local defaults = handlers.defaults(entity, player_index)
   if not defaults then return end
+  defaults.circuit_settings = nil
+end
+
+handlers.clear_circuit_settings = function (entity, player_index)
+  local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
   local control_behavior = entity.get_or_create_control_behavior(true)
-  if control_behavior then
-    for index, value in pairs(defaults.circuit_settings or {}) do
-      control_behavior[index] = handlers.default_circuit_condition(index, type) or false
-    end
+  if not handlers[type] or not control_behavior then return end
+  for _, index in pairs(handlers[type].circuit_settings) do
+    control_behavior[index] = handlers.default_circuit_condition(index, type) or false
   end
 end
 
 -- vanilla circuit settings
 handlers.is_circuit_default = function (entity)
   local control_behavior = entity.get_or_create_control_behavior()
-  local prototype = entity.type == "entity-ghost" and entity.ghost_type or entity.type
-  if handlers[prototype] and control_behavior then
-    for _, index in pairs(handlers[prototype].circuit_settings or {}) do
-      if not handlers.equal(handlers.default_circuit_condition(index, prototype), control_behavior[index]) then return false end
+  local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
+  if handlers[type] and control_behavior then
+    for _, index in pairs(handlers[type].circuit_settings or {}) do
+      if not handlers.equal(handlers.default_circuit_condition(index, type), control_behavior[index]) then return false end
     end
   end
   return true
@@ -279,6 +310,13 @@ handlers["inserter"] = {
     inserter_filter_mode = "whitelist",
     inserter_spoil_priority = "none"
   },
+  save_entity_settings = function (entity, player_index)
+    local defaults = handlers.defaults(entity, player_index)
+    defaults.entity_settings = {filters = {}}
+    for i = 1, entity.filter_slot_count do
+      defaults.entity_settings.filters[i] = entity.get_filter(i)
+    end
+  end,
   apply_entity_settings = function (entity, player_index)
     local defaults = handlers.defaults(entity, player_index)
     -- clear old filters
@@ -290,12 +328,9 @@ handlers["inserter"] = {
       entity.set_filter(i, defaults.entity_settings.filters[i])
     end
   end,
-  save_entity_settings = function (entity, player_index)
-    local defaults = handlers.defaults(entity, player_index)
-    local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
-    defaults.entity_settings = {filters = {}}
+  clear_entity_settings = function (entity, player_index)
     for i = 1, entity.filter_slot_count do
-      defaults.entity_settings.filters[i] = entity.get_filter(i)
+      entity.set_filter(i)
     end
   end,
   is_default = function (entity)
