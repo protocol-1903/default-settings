@@ -3,7 +3,6 @@ description: File a bug report to help improve my mods.
 labels: ["bug"]
 assignees:
   - protocol-1903
-type: bug
 body:
   - type: checkboxes
     id: issuetype
@@ -16,8 +15,8 @@ body:
         - label: Graphical
         - label: Crash
         - label: Other
-      validations:
-        required: true
+    validations:
+      required: true
   - type: textarea
     attributes:
       label: What is the problem?
