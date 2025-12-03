@@ -1,10 +1,10 @@
 blank_issues_enabled: false
 contact_links:
 
+  - name: "Bug Report"
+    path: bug_report.yml
+    description: "Create a bug report"
+
   - name: Question
     url: "https://discord.gg/K3fXMGVc4z"
     about: "Unsure if it's an issue, or just have a question? Ask in the discord first."
-
-  - name: "Blank Issue"
-    path: blank.yml
-    description: "Start with a completely blank issue template"
