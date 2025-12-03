@@ -1,6 +1,9 @@
 name: Bug Report
 description: File a bug report to help improve my mods.
 labels: ["bug"]
+assignees:
+  - protocol-1903
+type: bug
 body:
   - type: checkboxes
     id: issuetype
