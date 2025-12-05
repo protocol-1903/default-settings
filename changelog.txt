@@ -5,6 +5,7 @@ Date: ????
     - Updated LuaGUIElements to use tags instead of names for calling relevant handlers
     - Added new handlers for clearing entity settings and clearing saved settings
     - Code annotations (thanks for the recommendation @PennyJim)
+    - Added required references for PEREL
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.8
 Date: 2025-11-19
