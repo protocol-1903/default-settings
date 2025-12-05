@@ -8,6 +8,6 @@
   "factorio_version": "2.0",
   "dependencies": [
     "base",
-    "perel"
+    "perel >= 1.0.5"
   ]
 }
