@@ -359,24 +359,51 @@ handlers["lamp"] = {
     always_on = false
   }
 }
-handlers["lane-splitter"] = {
+handlers["loader"] = {
   circuit_settings = {
-    "set_input_filter",
-    "input_left_condition",
-    "input_right_condition",
-    "set_output_side",
-    "output_left_condition",
-    "output_right_condition",
-    "set_filter"
+    "circuit_enable_disable",
+    "circuit_condition",
+    "connect_to_logistic_network",
+    "logistic_condition",
+
+    "circuit_set_filters",
+    "circuit_read_transfers"
   },
   basic_entity_settings = {
-    splitter_filter = {},
-    splitter_input_priority = "none",
-    splitter_output_priority = "none",
-  }
+    loader_filter_mode = "none",
+    loader_belt_stack_size_override = 0
+  },
+  save_entity_settings = function (entity, player_index)
+    local defaults = handlers.defaults(entity, player_index)
+    defaults.entity_settings = {filters = {}}
+    for i = 1, entity.filter_slot_count do
+      defaults.entity_settings.filters[i] = entity.get_filter(i)
+    end
+  end,
+  apply_entity_settings = function (entity, player_index)
+    local defaults = handlers.defaults(entity, player_index)
+    -- clear old filters
+    for i = 1, entity.filter_slot_count do
+      entity.set_filter(i)
+    end
+    -- set new filters manually, only fills as many as required
+    for i = 1, entity.filter_slot_count do
+      entity.set_filter(i, defaults.entity_settings.filters[i])
+    end
+  end,
+  clear_entity_settings = function (entity, player_index)
+    for i = 1, entity.filter_slot_count do
+      entity.set_filter(i)
+    end
+  end,
+  is_default = function (entity)
+    for i = 1, entity.filter_slot_count do
+      if entity.get_filter(i) then return false end
+    end
+    return true
+  end
 }
--- handlers["loader"] = {}
--- handlers["loader-1x1"] = {}
+handlers["loader-1x1"] = handlers["loader"]
 -- handlers["logistic-container"] = {}
 -- handlers["mining-drill"] = {}
 -- handlers["offshore-pump"] = {}
@@ -464,6 +491,7 @@ handlers["splitter"] = {
     splitter_output_priority = "none",
   }
 }
+handlers["lane-splitter"] = handlers["splitter"]
 handlers["storage-tank"] = {
   circuit_settings = {
     "read_contents"
