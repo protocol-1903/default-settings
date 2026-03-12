@@ -14,6 +14,7 @@ Date: ????
     - Added basic logistic container support
     - Added accumulator support
     - Added assembling machine support
+    - Added wall support
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.9
 Date: 2025-12-04

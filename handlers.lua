@@ -282,7 +282,6 @@ handlers["assembling-machine"] = {
   }
 }
 -- handlers["asteroid-collector"] = {}
--- handlers["beacon"] = {}
 -- handlers["burner-generator"] = {}
 handlers["display-panel"] = {
   circuit_settings = {
@@ -559,6 +558,13 @@ handlers["transport-belt"] = {
   }
 }
 -- handlers["turret"] = {}
--- handlers["wall"] = {}
+handlers["wall"] = {
+  circuit_settings = {
+    "circuit_condition",
+    "open_gate",
+    "read_sensor",
+    "output_signal"
+  }
+}
 
 return handlers
