@@ -13,6 +13,7 @@ Date: ????
     - Added loader and loader-1x1 support
     - Added basic logistic container support
     - Added accumulator support
+    - Added assembling machine support
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.9
 Date: 2025-12-04

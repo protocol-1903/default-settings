@@ -262,7 +262,24 @@ handlers["accumulator"] = {
 }
 -- handlers["agricultural-tower"] = {}
 -- handlers["ammo-turret"] = {}
--- handlers["artillery-turret"] = {}
+handlers["artillery-turret"] = {
+  circuit_settings = {
+    "circuit_enable_disable",
+    "circuit_condition",
+    "connect_to_logistic_network",
+    "logistic_condition",
+
+    "circuit_set_recipe",
+    "circuit_read_contents",
+    "include_in_crafting",
+    "include_fuel",
+    "circuit_read_ingredients",
+    "circuit_read_recipe_finished",
+    "circuit_recipe_finished_signal",
+    "circuit_read_working",
+    "circuit_working_signal"
+  }
+}
 -- handlers["assembling-machine"] = {}
 -- handlers["asteroid-collector"] = {}
 -- handlers["beacon"] = {}
