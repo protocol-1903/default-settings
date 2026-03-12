@@ -433,7 +433,22 @@ handlers["rocket-silo"] = {
     use_transitional_requests = false
   }
 }
--- handlers["splitter"] = {}
+handlers["splitter"] = {
+  circuit_settings = {
+    "set_input_filter",
+    "input_left_condition",
+    "input_right_condition",
+    "set_output_side",
+    "output_left_condition",
+    "output_right_condition",
+    "set_filter"
+  },
+  basic_entity_settings = {
+    splitter_filter = {},
+    splitter_input_priority = "none",
+    splitter_output_priority = "none",
+  }
+}
 handlers["storage-tank"] = {
   circuit_settings = {
     "read_contents"

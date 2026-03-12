@@ -8,6 +8,7 @@ Date: ????
     - Added compatibility with reactor
     - Added compatibility with roboport
     - Added compatibility with rocket silo
+    - Added compatibility with splitter
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.9
 Date: 2025-12-04
