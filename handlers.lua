@@ -404,7 +404,13 @@ handlers["loader"] = {
   end
 }
 handlers["loader-1x1"] = handlers["loader"]
--- handlers["logistic-container"] = {}
+handlers["logistic-container"] = {
+  circuit_settings = {
+    "circuit_exclusive_mode_of_operation",
+    "circuit_condition_enabled",
+    "circuit_condition"
+  }
+}
 -- handlers["mining-drill"] = {}
 -- handlers["offshore-pump"] = {}
 handlers["power-switch"] = {

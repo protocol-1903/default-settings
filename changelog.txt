@@ -11,6 +11,7 @@ Date: ????
     - Added compatibility with splitter and lane splitter
     - Added compatibility with train stop
     - Added compatibility with loader and loader-1x1
+    - Added basic logistic container support
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.9
 Date: 2025-12-04
