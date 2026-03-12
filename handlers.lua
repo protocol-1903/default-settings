@@ -340,14 +340,42 @@ handlers["inserter"] = {
     return true
   end
 }
--- handlers["lamp"] = {}
+handlers["lamp"] = {
+  circuit_settings = {
+    "circuit_enable_disable",
+    "circuit_condition",
+    "connect_to_logistic_network",
+    "logistic_condition",
+
+    "use_colors",
+    "color_mode",
+    "red_signal",
+    "green_signal",
+    "blue_signal",
+    "rgb_signal"
+  },
+  basic_entity_settings = {
+    color = {255, 255, 191},
+    always_on = false
+  }
+}
 -- handlers["lane-splitter"] = {}
 -- handlers["loader"] = {}
 -- handlers["loader-1x1"] = {}
 -- handlers["logistic-container"] = {}
 -- handlers["mining-drill"] = {}
 -- handlers["offshore-pump"] = {}
--- handlers["power-switch"] = {}
+handlers["power-switch"] = {
+  circuit_settings = {
+    "circuit_enable_disable",
+    "circuit_condition",
+    "connect_to_logistic_network",
+    "logistic_condition"
+  },
+  basic_entity_settings = {
+    power_switch_state = false
+  }
+}
 handlers["programmable-speaker"] = {
   circuit_settings = {
     "circuit_condition",
