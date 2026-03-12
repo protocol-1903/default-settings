@@ -262,7 +262,8 @@ handlers["accumulator"] = {
 }
 -- handlers["agricultural-tower"] = {}
 -- handlers["ammo-turret"] = {}
-handlers["artillery-turret"] = {
+-- handlers["artillery-turret"] = {}
+handlers["assembling-machine"] = {
   circuit_settings = {
     "circuit_enable_disable",
     "circuit_condition",
@@ -280,7 +281,6 @@ handlers["artillery-turret"] = {
     "circuit_working_signal"
   }
 }
--- handlers["assembling-machine"] = {}
 -- handlers["asteroid-collector"] = {}
 -- handlers["beacon"] = {}
 -- handlers["burner-generator"] = {}
