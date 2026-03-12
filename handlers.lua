@@ -454,7 +454,28 @@ handlers["storage-tank"] = {
     "read_contents"
   }
 }
--- handlers["train-stop"] = {}
+handlers["train-stop"] = {
+  circuit_settings = {
+    "circuit_enable_disable",
+    "circuit_condition",
+    "connect_to_logistic_network",
+    "logistic_condition",
+
+    "send_to_train",
+    "read_from_train",
+    "read_stopped_train",
+    "set_trains_limit",
+    "read_trains_count",
+    "stopped_train_signal",
+    "trains_count_signal",
+    "trains_limit_signal",
+    "set_priority",
+    "priority_signal"
+  },
+  basic_entity_settings = {
+
+  }
+}
 handlers["transport-belt"] = {
   circuit_settings = {
     "circuit_enable_disable",
