@@ -4,6 +4,7 @@ Date: ????
   Changes:
     - Added compatibility with lamps
     - Added compatibility with power switch
+    - Added compatibility with storage tank
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.9
 Date: 2025-12-04

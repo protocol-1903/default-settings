@@ -410,7 +410,11 @@ handlers["pump"] = {
 -- handlers["roboport"] = {}
 -- handlers["rocket-silo"] = {}
 -- handlers["splitter"] = {}
--- handlers["storage-tank"] = {}
+handlers["storage-tank"] = {
+  circuit_settings = {
+    "read_contents"
+  }
+}
 -- handlers["train-stop"] = {}
 handlers["transport-belt"] = {
   circuit_settings = {
