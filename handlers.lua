@@ -424,7 +424,15 @@ handlers["roboport"] = {
     "roboport_count_output_signal"
   }
 }
--- handlers["rocket-silo"] = {}
+handlers["rocket-silo"] = {
+  circuit_settings = {
+    "read_mode"
+  },
+  basic_entity_settings = {
+    send_to_orbit_automatically = false,
+    use_transitional_requests = false
+  }
+}
 -- handlers["splitter"] = {}
 handlers["storage-tank"] = {
   circuit_settings = {
