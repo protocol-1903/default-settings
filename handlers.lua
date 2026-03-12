@@ -412,7 +412,18 @@ handlers["reactor"] = {
     "temperature_signal"
   }
 }
--- handlers["roboport"] = {}
+handlers["roboport"] = {
+  circuit_settings = {
+    "read_items_mode",
+    "read_logistics",
+    "read_robot_stats",
+    "available_logistic_output_signal",
+    "total_logistic_output_signal",
+    "available_construction_output_signal",
+    "total_construction_output_signal",
+    "roboport_count_output_signal"
+  }
+}
 -- handlers["rocket-silo"] = {}
 -- handlers["splitter"] = {}
 handlers["storage-tank"] = {
