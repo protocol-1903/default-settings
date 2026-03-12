@@ -359,7 +359,22 @@ handlers["lamp"] = {
     always_on = false
   }
 }
--- handlers["lane-splitter"] = {}
+handlers["lane-splitter"] = {
+  circuit_settings = {
+    "set_input_filter",
+    "input_left_condition",
+    "input_right_condition",
+    "set_output_side",
+    "output_left_condition",
+    "output_right_condition",
+    "set_filter"
+  },
+  basic_entity_settings = {
+    splitter_filter = {},
+    splitter_input_priority = "none",
+    splitter_output_priority = "none",
+  }
+}
 -- handlers["loader"] = {}
 -- handlers["loader-1x1"] = {}
 -- handlers["logistic-container"] = {}

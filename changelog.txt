@@ -9,6 +9,7 @@ Date: ????
     - Added compatibility with roboport
     - Added compatibility with rocket silo
     - Added compatibility with splitter
+    - Added compatibility with lane splitter
     - Added compatibility with train stop
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.9
