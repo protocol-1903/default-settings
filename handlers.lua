@@ -254,7 +254,12 @@ handlers.default_circuit_condition = function(index, type)
   return false
 end
 
--- handlers["accumulator"] = {}
+handlers["accumulator"] = {
+  circuit_settings = {
+    "read_charge",
+    "output_signal"
+  }
+}
 -- handlers["agricultural-tower"] = {}
 -- handlers["ammo-turret"] = {}
 -- handlers["artillery-turret"] = {}

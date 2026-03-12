@@ -2,16 +2,17 @@
 Version: 1.0.10
 Date: ????
   Changes:
-    - Added compatibility with lamps
-    - Added compatibility with power switch
-    - Added compatibility with storage tank
-    - Added compatibility with reactor
-    - Added compatibility with roboport
-    - Added compatibility with rocket silo
-    - Added compatibility with splitter and lane splitter
-    - Added compatibility with train stop
-    - Added compatibility with loader and loader-1x1
+    - Added lamp support
+    - Added power switch support
+    - Added storage tank support
+    - Added reactor support
+    - Added roboport support
+    - Added rocket silo support
+    - Added splitter and lane splitter support
+    - Added train stop support
+    - Added loader and loader-1x1 support
     - Added basic logistic container support
+    - Added accumulator support
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.9
 Date: 2025-12-04
