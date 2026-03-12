@@ -1,20 +1,16 @@
 script.on_init(function (event)
-  storage = {
-    player_settings = {}
-  }
+  storage.player_settings = {}
 end)
 
 script.on_configuration_changed(function (event)
-  storage = {
-    player_settings = storage.player_settings or {}
-  }
+  storage.player_settings = storage.player_settings or {}
 end)
 
 local handlers = require "handlers"
 
 -- belts, speakers, display panels, pumps
 
-invalid_circuit_setting = {
+local invalid_circuit_setting = {
   valid = true,
   object_name = true,
   disabled = true,
@@ -38,11 +34,10 @@ local function update_gui(entity, player_index)
   end
 
   if not player.is_shortcut_toggled("default-settings-show-gui") then return end
-  
+
   if not entity or not handlers[type] or not defines.relative_gui_type[type:gsub("-", "_") .. "_gui"] then return end
-  
+
   local defaults = handlers.defaults(entity, player_index)
-  ---@type LuaGuiElement
   local window = player.gui.relative.add{
     type = "frame",
     name = "default-settings",
@@ -57,7 +52,7 @@ local function update_gui(entity, player_index)
     style = "inside_shallow_frame_with_padding_and_vertical_spacing",
     direction = "vertical"
   }
-  subheader = window.add{
+  local subheader = window.add{
     type = "frame",
     style = "subheader_frame"
   }
