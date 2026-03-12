@@ -405,8 +405,13 @@ handlers["pump"] = {
     "set_filter"
   }
 }
--- handlers["radar"] = {}
--- handlers["reactor"] = {}
+handlers["reactor"] = {
+  circuit_settings = {
+    "read_fuel",
+    "read_temperature",
+    "temperature_signal"
+  }
+}
 -- handlers["roboport"] = {}
 -- handlers["rocket-silo"] = {}
 -- handlers["splitter"] = {}
