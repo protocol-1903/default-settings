@@ -300,6 +300,11 @@ handlers["artillery-turret"] = {
     artillery_auto_targeting = true
   }
 }
+handlers["artillery-wagon"] = {
+  basic_entity_settings = {
+    artillery_auto_targeting = true
+  }
+}
 handlers["assembling-machine"] = {
   circuit_settings = {
     "circuit_enable_disable",
