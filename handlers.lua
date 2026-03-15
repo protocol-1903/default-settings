@@ -114,7 +114,7 @@ end
 handlers.get_entity_parameters = function (entity)
   local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
   if not handlers[type] or not handlers[type].get_entity_parameters then return {} end
-  return handlers[type].get_entity_parameters(entity)
+  return handlers[type].get_entity_parameters(entity) or {}
 end
 
 handlers.set_entity_parameters = function (entity, parameters)
@@ -367,9 +367,25 @@ handlers["assembling-machine"] = {
     "circuit_read_working",
     "circuit_working_signal"
   },
+  save_entity_settings = function (entity, player_index)
+    local defaults = handlers.defaults(entity, player_index)
+    local recipe, quality = entity.get_recipe()
+    defaults.entity_settings = {recipe = recipe, quality = quality}
+  end,
+  apply_entity_settings = function (entity, player_index)
+    local defaults = handlers.defaults(entity, player_index)
+    -- clear old priorities
+    entity.set_recipe(defaults.entity_settings.recipe, defaults.entity_settings.quality)
+  end,
+  clear_entity_settings = function (entity)
+    entity.set_recipe()
+  end,
+  is_default = function (entity)
+    return not entity.get_recipe()
+  end,
   get_entity_parameters = function (entity)
     local recipe = entity.get_recipe()
-    if recipe.has_category("parameters") then
+    if recipe and recipe.has_category("parameters") then
       return {[recipe.name:sub(10) + 0] = {name = recipe.name, type = script.feature_flags.quality and "recipe-with-quality" or "recipe"}}
     end
   end,
