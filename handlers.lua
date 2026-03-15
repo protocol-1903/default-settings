@@ -536,7 +536,14 @@ handlers["mining-drill"] = {
     return true
   end
 }
--- handlers["offshore-pump"] = {}
+handlers["offshore-pump"] = {
+  circuit_settings = {
+    "circuit_enable_disable",
+    "circuit_condition",
+    "connect_to_logistic_network",
+    "logistic_condition"
+  }
+}
 handlers["power-switch"] = {
   circuit_settings = {
     "circuit_enable_disable",
