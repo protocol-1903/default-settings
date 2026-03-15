@@ -23,6 +23,7 @@ Date: ????
     - Added ammo turret support
     - Added electric turret support
     - Added fluid turret support
+    - Added turret support
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.9
 Date: 2025-12-04
