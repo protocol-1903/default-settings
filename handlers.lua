@@ -285,7 +285,16 @@ handlers["accumulator"] = {
     "output_signal"
   }
 }
--- handlers["agricultural-tower"] = {}
+handlers["agricultural-tower"] = {
+  circuit_settings = {
+    "circuit_enable_disable",
+    "circuit_condition",
+    "connect_to_logistic_network",
+    "logistic_condition",
+
+    "read_contents"
+  },
+}
 handlers["ammo-turret"] = {
   circuit_settings = {
     "circuit_enable_disable",
@@ -535,8 +544,6 @@ handlers["furnace"] = {
     "circuit_working_signal"
   }
 }
--- handlers["fusion-generator"] = {}
--- handlers["fusion-reactor"] = {}
 handlers["inserter"] = {
   circuit_settings = {
     "circuit_enable_disable",

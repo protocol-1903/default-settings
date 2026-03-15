@@ -28,6 +28,7 @@ Date: ????
     - Added fluid turret support
     - Added turret support
     - Added asteroid collector support
+    - Added agricultural tower support
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.9
 Date: 2025-12-04
