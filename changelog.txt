@@ -6,6 +6,7 @@ Date: ????
   Changes:
     - Added inserter parameter support
     - Added assembling machine parameter support
+    - Added asteroid collector parameter support
     - Added lamp support
     - Added power switch support
     - Added storage tank support
@@ -26,6 +27,7 @@ Date: ????
     - Added electric turret support
     - Added fluid turret support
     - Added turret support
+    - Added asteroid collector support
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.9
 Date: 2025-12-04

@@ -148,7 +148,7 @@ local function apply_parameters(player_index)
     parameters[table[i].caption] = {
       name = type(elem_value) ~= "string" and elem_value.name or elem_value,
       quality = type(elem_value) ~= "string" and elem_value.quality or nil,
-      comparator = comparator.type == "drop-down" and comparator.selected_index
+      comparator = comparator.type == "drop-down" and comparator.selected_index or nil
     }
   end
   gui.destroy()

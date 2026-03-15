@@ -369,8 +369,68 @@ handlers["assembling-machine"] = {
     entity.set_recipe(data.name, data.quality)
   end
 }
--- handlers["asteroid-collector"] = {}
--- handlers["burner-generator"] = {}
+handlers["asteroid-collector"] = {
+  circuit_settings = {
+    "circuit_enable_disable",
+    "circuit_condition",
+    "connect_to_logistic_network",
+    "logistic_condition",
+
+    "set_filter",
+    "read_contents",
+    "include_hands"
+  },
+  save_entity_settings = function (entity, player_index)
+    local defaults = handlers.defaults(entity, player_index)
+    defaults.entity_settings = {filters = {}}
+    for i = 1, entity.filter_slot_count do
+      defaults.entity_settings.filters[i] = entity.get_filter(i)
+    end
+  end,
+  apply_entity_settings = function (entity, player_index)
+    local defaults = handlers.defaults(entity, player_index)
+    -- clear old filters
+    for _ = 1, entity.filter_slot_count do
+      entity.set_filter(1)
+    end
+    -- set new filters manually, only fills as many as required
+    for i = 1, #defaults.entity_settings.filters do
+      entity.set_filter(i, defaults.entity_settings.filters[i])
+    end
+  end,
+  clear_entity_settings = function (entity)
+    for _ = 1, entity.filter_slot_count do
+      entity.set_filter(1)
+    end
+  end,
+  is_default = function (entity)
+    for i = 1, entity.filter_slot_count do
+      if entity.get_filter(i) then return false end
+    end
+    return true
+  end,
+  get_entity_parameters = function (entity)
+    local parameters = {}
+    for i = 1, entity.filter_slot_count do
+      local filter = entity.get_filter(i)
+      if filter and filter.name:sub(1, 10) == "parameter-" then
+        parameters[tonumber(filter.name:sub(10))] = {
+          name = filter.name,
+          type = "asteroid-chunk"
+        }
+      end
+    end
+    return parameters
+  end,
+  set_entity_parameters = function (entity, parameters)
+    for i = 1, entity.filter_slot_count do
+      local filter = entity.get_filter(i)
+      if filter and filter.name:sub(1, 10) == "parameter-" then
+        entity.set_filter(i, parameters[filter.name].name)
+      end
+    end
+  end
+}
 handlers["display-panel"] = {
   circuit_settings = {
     "messages"
@@ -529,8 +589,8 @@ handlers["inserter"] = {
     local parameters = {}
     for i = 1, entity.filter_slot_count do
       local filter = entity.get_filter(i)
-      if filter then
-        parameters[filter.name:sub(10) + 0] = {
+      if filter and filter.name:sub(1, 10) == "parameter-" then
+        parameters[tonumber(filter.name:sub(10))] = {
           name = filter.name,
           type = script.feature_flags.quality and "item-with-quality" or "item"
         }
