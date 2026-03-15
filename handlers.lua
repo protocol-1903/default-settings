@@ -90,14 +90,14 @@ handlers.delete_entity_settings = function (entity, player_index)
   defaults.entity_settings = nil
 end
 
-handlers.clear_entity_settings = function (entity, player_index)
+handlers.clear_entity_settings = function (entity)
   local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
   if not handlers[type] then return end
   for index, value in pairs(handlers[type].basic_entity_settings) do
     entity[index] = value
   end
   if not handlers[type].clear_entity_settings then return end
-  handlers[type].clear_entity_settings(entity, player_index)
+  handlers[type].clear_entity_settings(entity)
 end
 
 -- vanilla settings
@@ -155,7 +155,7 @@ handlers.delete_circuit_settings = function (entity, player_index)
   defaults.circuit_settings = nil
 end
 
-handlers.clear_circuit_settings = function (entity, player_index)
+handlers.clear_circuit_settings = function (entity)
   local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
   local control_behavior = entity.get_or_create_control_behavior(true)
   if not handlers[type] or not control_behavior then return end
@@ -384,7 +384,7 @@ handlers["inserter"] = {
       entity.set_filter(i, defaults.entity_settings.filters[i])
     end
   end,
-  clear_entity_settings = function (entity, player_index)
+  clear_entity_settings = function (entity)
     for i = 1, entity.filter_slot_count do
       entity.set_filter(i)
     end
@@ -470,7 +470,7 @@ handlers["loader"] = {
       entity.set_filter(i, defaults.entity_settings.filters[i])
     end
   end,
-  clear_entity_settings = function (entity, player_index)
+  clear_entity_settings = function (entity)
     for i = 1, entity.filter_slot_count do
       entity.set_filter(i)
     end

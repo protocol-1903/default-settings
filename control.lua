@@ -384,10 +384,10 @@ script.on_event(defines.events.on_circuit_wire_removed, function (event)
   local source_base_id = event.source_connector_id - (event.source_connector_id + 1) % 2 + 1
   local destination_base_id = event.destination_connector_id - (event.destination_connector_id + 1) % 2 + 1
   if source.get_wire_connector(source_base_id, true).connection_count + source.get_wire_connector(source_base_id - 1, true).connection_count == 0 and handlers.is_circuit_custom_default(source, event.player_index) then
-    handlers.clear_circuit_settings(source, event.player_index)
+    handlers.clear_circuit_settings(source)
   end
   if destination.get_wire_connector(destination_base_id, true).connection_count + destination.get_wire_connector(destination_base_id - 1, true).connection_count == 0 and handlers.is_circuit_custom_default(destination, event.player_index) then
-    handlers.clear_circuit_settings(destination, event.player_index)
+    handlers.clear_circuit_settings(destination)
   end
 end)
 
