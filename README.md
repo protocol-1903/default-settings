@@ -2,29 +2,27 @@
 
 Allows you to save alternate default setting states for the circuit and entity settings. Useable per type (belt, inserter, assembling machine, etc) or individually (express transport belt, stack inserter, assembling machine 1, etc)
 
-Support for each entity has to be programmed manually. I'll get around to finishing them eventually, but if you'd like me to expedite the process on specific ones let me know!
+# Parameters
+
+Certain entities, when you save parameters in their data, allow you to configure them on-place like you would blueprints. Note this currently only works for entity settings, not circuit settings. I haven't figured out a good method for those yet.
 
 Currently supported:
+- inserter
+- assembling machine
+- asteroid collector
+
+Not yet supported:
 - display panel
 - furnace
-- inserter
 - programmable speaker
 - pump
 - transport belt
-
-Not yet supported:
 - accumulator
 - agricultural tower
 - ammo turret
 - artillery turret
-- assembling machine
-- asteroid collector
-- burner generator
 - electric turret
 - fluid turret
-- fusion generator
-- fusion reactor
-- generator
 - lamp
 - splitter (and lane splitter)
 - loader (and loader 1x1)
@@ -40,11 +38,6 @@ Not yet supported:
 - train stop
 - turret
 - wall
-
-No support intended, for one reason or another:
-- heat interface
-- infinity container
-- infinity pipe
 
 TODO:
 - undo/redo support (yayyyy....)
