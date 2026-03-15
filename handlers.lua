@@ -308,7 +308,7 @@ handlers["assembling-machine"] = {
   get_entity_parameters = function (entity)
     local recipe = entity.get_recipe()
     if recipe.has_category("parameters") then
-      return {[recipe.name] = script.feature_flags.quality and "recipe-with-quality" or "recipe"}
+      return {[recipe.name:sub(10) + 0] = {name = recipe.name, type = script.feature_flags.quality and "recipe-with-quality" or "recipe"}}
     end
   end,
   set_entity_parameters = function (entity, parameters)
@@ -400,7 +400,10 @@ handlers["inserter"] = {
     for i = 1, entity.filter_slot_count do
       local filter = entity.get_filter(i)
       if filter then
-        parameters[filter.name] = script.feature_flags.quality and "item-with-quality" or "item"
+        parameters[filter.name:sub(10) + 0] = {
+          name = filter.name,
+          type = script.feature_flags.quality and "item-with-quality" or "item"
+        }
       end
     end
     return parameters

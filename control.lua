@@ -78,17 +78,18 @@ local function generate_parameter_gui(player_index, parameters, entity)
     type = "table",
     column_count = 3
   }
-  for parameter, type in pairs(parameters) do
+  for _, parameter in pairs(parameters) do
     gui.main.shallow.pane.table.add{
       type = "label",
-      caption = parameter
+      caption = parameter.name
     }
     gui.main.shallow.pane.table.add{
       type = "choose-elem-button",
       style = "slot_button",
-      elem_type = type
+      elem_type = parameter.type,
+      elem_filters = parameter.filters
     }
-    if script.feature_flags.quality and type:match("quality") then
+    if script.feature_flags.quality and parameter.type:match("quality") then
       gui.main.shallow.pane.table.add{
         type = "drop-down",
         selected_index = 1,
@@ -396,10 +397,10 @@ end)
 script.on_event(defines.events.on_circuit_network_destroyed, function (event)
   if not event.player_index then return end
   if event.source and event.source.get_wire_connector(event.source_connector_id - (event.source_connector_id + 1) % 2 + 1, true).connection_count == 0 then
-    handlers.clear_circuit_settings(event.source, event.player_index)
+    handlers.clear_circuit_settings(event.source)
   end
   if event.destination and event.destination.get_wire_connector(event.destination_connector_id - (event.destination_connector_id + 1) % 2 + 1, true).connection_count == 0 then
-    handlers.clear_circuit_settings(event.destination, event.player_index)
+    handlers.clear_circuit_settings(event.destination)
   end
 end)
 
