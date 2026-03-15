@@ -287,7 +287,19 @@ handlers["accumulator"] = {
 }
 -- handlers["agricultural-tower"] = {}
 -- handlers["ammo-turret"] = {}
--- handlers["artillery-turret"] = {}
+handlers["artillery-turret"] = {
+  circuit_settings = {
+    "circuit_enable_disable",
+    "circuit_condition",
+    "connect_to_logistic_network",
+    "logistic_condition",
+
+    "read_ammo"
+  },
+  basic_entity_settings = {
+    artillery_auto_targeting = true
+  }
+}
 handlers["assembling-machine"] = {
   circuit_settings = {
     "circuit_enable_disable",

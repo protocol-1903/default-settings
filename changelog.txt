@@ -19,6 +19,7 @@ Date: ????
     - Added wall support
     - Added mining drill support
     - Added offshore pump support
+    - Added artillery turret support
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.9
 Date: 2025-12-04
