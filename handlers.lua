@@ -64,7 +64,7 @@ handlers.save_entity_settings = function (entity, player_index)
   local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
   defaults.basic_entity_settings = {}
   -- save basic settings (R/W values)
-  for index in pairs(handlers[type].basic_entity_settings) do
+  for index in pairs(handlers[type].basic_entity_settings or {}) do
     defaults.basic_entity_settings[index] = entity[index]
   end
   if not handlers[type].save_entity_settings then return end
@@ -93,7 +93,7 @@ end
 handlers.clear_entity_settings = function (entity)
   local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
   if not handlers[type] then return end
-  for index, value in pairs(handlers[type].basic_entity_settings) do
+  for index, value in pairs(handlers[type].basic_entity_settings or {}) do
     entity[index] = value
   end
   if not handlers[type].clear_entity_settings then return end
@@ -131,7 +131,7 @@ handlers.save_circuit_settings = function (entity, player_index)
   -- load relevant circuit settings
   local control_behavior = entity.get_or_create_control_behavior()
   if control_behavior then
-    for _, index in pairs(handlers[type].circuit_settings) do
+    for _, index in pairs(handlers[type].circuit_settings or {}) do
       defaults.circuit_settings[index] = control_behavior[index]
     end
   end
@@ -159,7 +159,7 @@ handlers.clear_circuit_settings = function (entity)
   local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
   local control_behavior = entity.get_or_create_control_behavior(true)
   if not handlers[type] or not control_behavior then return end
-  for _, index in pairs(handlers[type].circuit_settings) do
+  for _, index in pairs(handlers[type].circuit_settings or {}) do
     control_behavior[index] = handlers.default_circuit_condition(index, type) or false
   end
 end
@@ -477,10 +477,6 @@ handlers["furnace"] = {
 }
 -- handlers["fusion-generator"] = {}
 -- handlers["fusion-reactor"] = {}
--- handlers["generator"] = {}
--- handlers["heat-interface"] = {}
--- handlers["infinity-container"] = {}
--- handlers["infinity-pipe"] = {}
 handlers["inserter"] = {
   circuit_settings = {
     "circuit_enable_disable",
