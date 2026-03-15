@@ -89,7 +89,7 @@ local function generate_parameter_gui(player_index, parameters, entity)
       elem_type = parameter.type,
       elem_filters = parameter.filters
     }
-    if script.feature_flags.quality and parameter.type:match("quality") then
+    if script.feature_flags.quality and parameter.type == "item-with-quality" then
       gui.main.shallow.pane.table.add{
         type = "drop-down",
         selected_index = 1,
