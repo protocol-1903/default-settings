@@ -113,7 +113,7 @@ end
 
 handlers.get_entity_parameters = function (entity)
   local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
-  if not handlers[type] or not handlers[type].get_entity_parameters then return end
+  if not handlers[type] or not handlers[type].get_entity_parameters then return {} end
   return handlers[type].get_entity_parameters(entity)
 end
 
