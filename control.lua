@@ -336,7 +336,7 @@ end)
 script.on_event(defines.events.on_gui_click, function (event)
   if event.element.get_mod() ~= "default-settings" then return end
   local player = game.get_player(event.player_index)
-  if player.opened_gui_type == defines.gui_type.entity and event.element.tags then
+  if player.opened_gui_type == defines.gui_type.entity and event.element.tags.handler then
     handlers[event.element.tags.handler](player.opened, player.index)
     update_subgui(player.opened, player.index)
   elseif player.opened_gui_type == defines.gui_type.custom and event.element.name == "close" then
