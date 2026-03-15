@@ -326,7 +326,7 @@ handlers["ammo-turret"] = {
   end,
   is_default = function (entity)
     return #entity.priority_targets == 0
-  end,
+  end
 }
 handlers["artillery-turret"] = {
   circuit_settings = {
@@ -376,8 +376,89 @@ handlers["display-panel"] = {
     "messages"
   }
 }
--- handlers["electric-turret"] = {}
--- handlers["fluid-turret"] = {}
+handlers["electric-turret"] = {
+  circuit_settings = {
+    "circuit_enable_disable",
+    "circuit_condition",
+    "connect_to_logistic_network",
+    "logistic_condition",
+
+    "set_priority_list",
+    "set_ignore_unlisted_targets",
+    "ignore_unlisted_targets_condition"
+  },
+  basic_entity_settings = {
+    ignore_unprioritised_targets = false
+  },
+  save_entity_settings = function (entity, player_index)
+    local defaults = handlers.defaults(entity, player_index)
+    defaults.entity_settings = {priorities = {}}
+    for i, target in pairs(entity.priority_targets) do
+      defaults.entity_settings.priorities[i] = target.name
+    end
+  end,
+  apply_entity_settings = function (entity, player_index)
+    local defaults = handlers.defaults(entity, player_index)
+    -- clear old priorities
+    for _ = 1, #entity.priority_targets do
+      entity.set_priority_target(1)
+    end
+    -- set new filters manually, only fills as many as required
+    for i, target in pairs(defaults.entity_settings.priorities) do
+      entity.set_priority_target(i, target)
+    end
+  end,
+  clear_entity_settings = function (entity)
+    for _ = 1, #entity.priority_targets do
+      entity.set_priority_target(1)
+    end
+  end,
+  is_default = function (entity)
+    return #entity.priority_targets == 0
+  end
+}
+handlers["fluid-turret"] = {
+  circuit_settings = {
+    "circuit_enable_disable",
+    "circuit_condition",
+    "connect_to_logistic_network",
+    "logistic_condition",
+
+    "set_priority_list",
+    "set_ignore_unlisted_targets",
+    "ignore_unlisted_targets_condition",
+    "read_ammo"
+  },
+  basic_entity_settings = {
+    ignore_unprioritised_targets = false
+  },
+  save_entity_settings = function (entity, player_index)
+    local defaults = handlers.defaults(entity, player_index)
+    defaults.entity_settings = {priorities = {}}
+    for i, target in pairs(entity.priority_targets) do
+      defaults.entity_settings.priorities[i] = target.name
+    end
+  end,
+  apply_entity_settings = function (entity, player_index)
+    local defaults = handlers.defaults(entity, player_index)
+    -- clear old priorities
+    for _ = 1, #entity.priority_targets do
+      entity.set_priority_target(1)
+    end
+    -- set new filters manually, only fills as many as required
+    for i, target in pairs(defaults.entity_settings.priorities) do
+      entity.set_priority_target(i, target)
+    end
+  end,
+  clear_entity_settings = function (entity)
+    for _ = 1, #entity.priority_targets do
+      entity.set_priority_target(1)
+    end
+  end,
+  is_default = function (entity)
+    return #entity.priority_targets == 0
+  end
+}
 handlers["furnace"] = {
   circuit_settings = {
     "circuit_enable_disable",
