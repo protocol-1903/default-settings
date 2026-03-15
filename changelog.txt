@@ -4,6 +4,8 @@ Date: ????
   Features:
     - Added support for parameters in default settings (each type needs explicit parameter support, please request if not implemented) Resolves https://github.com/protocol-1903/default-settings/issues/6
   Changes:
+    - Added inserter parameter support
+    - Added assembling machine parameter support
     - Added lamp support
     - Added power switch support
     - Added storage tank support
