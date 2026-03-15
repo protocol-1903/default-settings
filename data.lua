@@ -19,8 +19,8 @@ data:extend{
   },
   {
     type = "custom-input",
-    name = "default-settings-build",
-    linked_game_control = "build",
+    name = "default-settings-confirm",
+    linked_game_control = "confirm-gui",
     key_sequence = ""
   },
   {

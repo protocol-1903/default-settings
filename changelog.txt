@@ -1,6 +1,8 @@
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.10
 Date: ????
+  Features:
+    - Added support for parameters in default settings (each type needs explicit parameter support, please request if not implemented) Resolves https://github.com/protocol-1903/default-settings/issues/6
   Changes:
     - Added lamp support
     - Added power switch support

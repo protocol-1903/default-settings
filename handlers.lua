@@ -83,14 +83,6 @@ handlers.apply_entity_settings = function (entity, player_index)
   handlers[type].apply_entity_settings(entity, player_index)
 end
 
--- handlers.apply_entity_parameters = function (entity, player_index)
---   local defaults = handlers.defaults(entity, player_index)
---   if not defaults then return end
---   local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
---   if not handlers[type].apply_entity_parameters then return end
---   handlers[type].apply_entity_parameters(entity, player_index)
--- end
-
 handlers.delete_entity_settings = function (entity, player_index)
   local defaults = handlers.defaults(entity, player_index)
   if not defaults then return end
@@ -119,6 +111,18 @@ handlers.is_default = function (entity)
   return handlers[type].is_default and handlers[type].is_default(entity) or true
 end
 
+handlers.get_entity_parameters = function (entity)
+  local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
+  if not handlers[type] or not handlers[type].get_entity_parameters then return end
+  return handlers[type].get_entity_parameters(entity)
+end
+
+handlers.set_entity_parameters = function (entity, parameters)
+  local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
+  if not handlers[type] or not handlers[type].set_entity_parameters then return end
+  handlers[type].set_entity_parameters(entity, parameters)
+end
+
 handlers.save_circuit_settings = function (entity, player_index)
   local defaults = handlers.defaults(entity, player_index)
   if not defaults then return end
@@ -145,20 +149,6 @@ handlers.apply_circuit_settings = function (entity, player_index)
   end
 end
 
--- handlers.apply_circuit_parameters = function (entity, player_index)
---   local defaults = handlers.defaults(entity, player_index)
---   if not defaults then return end
---   local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
---   local control_behavior = entity.get_or_create_control_behavior()
---   if control_behavior then
---     for index, value in pairs(defaults.circuit_settings or {}) do
---       control_behavior[index] = value
---     end
---   end
---   if not handlers[type].apply_circuit_parameters then return end
---   handlers[type].apply_circuit_parameters(entity, player_index)
--- end
-
 handlers.delete_circuit_settings = function (entity, player_index)
   local defaults = handlers.defaults(entity, player_index)
   if not defaults then return end
@@ -184,6 +174,18 @@ handlers.is_circuit_default = function (entity)
     end
   end
   return true
+end
+
+handlers.get_circuit_parameters = function (entity)
+  local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
+  if not handlers[type] or not handlers[type].get_circuit_parameters then return end
+  return handlers[type].get_circuit_parameters(entity)
+end
+
+handlers.set_circuit_parameters = function (entity, parameters)
+  local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
+  if not handlers[type] or not handlers[type].set_circuit_parameters then return end
+  handlers[type].set_circuit_parameters(entity, parameters)
 end
 
 -- also returns false if no defaults exist (circuit settings)
@@ -267,6 +269,16 @@ handlers.default_circuit_condition = function(index, type)
   return false
 end
 
+local comparators = {
+  nil,
+  ">",
+  "<",
+  "=",
+  "≥",
+  "≤",
+  "≠"
+}
+
 handlers["accumulator"] = {
   circuit_settings = {
     "read_charge",
@@ -292,7 +304,17 @@ handlers["assembling-machine"] = {
     "circuit_recipe_finished_signal",
     "circuit_read_working",
     "circuit_working_signal"
-  }
+  },
+  get_entity_parameters = function (entity)
+    local recipe = entity.get_recipe()
+    if recipe.has_category("parameters") then
+      return {[recipe.name] = script.feature_flags.quality and "recipe-with-quality" or "recipe"}
+    end
+  end,
+  set_entity_parameters = function (entity, parameters)
+    local _, data = next(parameters)
+    entity.set_recipe(data.name, data.quality)
+  end
 }
 -- handlers["asteroid-collector"] = {}
 -- handlers["burner-generator"] = {}
@@ -372,6 +394,29 @@ handlers["inserter"] = {
       if entity.get_filter(i) then return false end
     end
     return true
+  end,
+  get_entity_parameters = function (entity)
+    local parameters = {}
+    for i = 1, entity.filter_slot_count do
+      local filter = entity.get_filter(i)
+      if filter then
+        parameters[filter.name] = script.feature_flags.quality and "item-with-quality" or "item"
+      end
+    end
+    return parameters
+  end,
+  set_entity_parameters = function (entity, parameters)
+    for i = 1, entity.filter_slot_count do
+      local filter = entity.get_filter(i)
+      if filter then
+        local comparator = comparators[parameters[filter.name].comparator or 0]
+        entity.set_filter(i, {
+          name = parameters[filter.name].name,
+          quality = comparator and parameters[filter.name].quality or nil,
+          comparator = comparator
+        })
+      end
+    end
   end
 }
 handlers["lamp"] = {
