@@ -541,7 +541,7 @@ handlers["inserter"] = {
   set_entity_parameters = function (entity, parameters)
     for i = 1, entity.filter_slot_count do
       local filter = entity.get_filter(i)
-      if filter then
+      if filter and filter.name:sub(1, 10) == "parameter-" then
         local comparator = comparators[parameters[filter.name].comparator or 0]
         entity.set_filter(i, {
           name = parameters[filter.name].name,
