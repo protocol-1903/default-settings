@@ -156,6 +156,14 @@ local function apply_parameters(player_index)
   player.play_sound{path = "utility/confirm"}
 end
 
+local turret_guis = {
+  ["ammo-turret"] = defines.relative_gui_type.turret_gui,
+  ["artillery-turret"] = defines.relative_gui_type.turret_gui,
+  ["electric-turret"] = defines.relative_gui_type.turret_gui,
+  ["fluid-turret"] = defines.relative_gui_type.turret_gui,
+  ["turret"] = defines.relative_gui_type.turret_gui,
+}
+
 local function update_subgui(entity, player_index)
   local type = entity and (entity.type == "entity-ghost" and entity.ghost_type or entity.type)
   local player = game.get_player(player_index)
@@ -168,7 +176,7 @@ local function update_subgui(entity, player_index)
 
   if not player.is_shortcut_toggled("default-settings-show-gui") then return end
 
-  if not entity or not handlers[type] or not defines.relative_gui_type[type:gsub("-", "_") .. "_gui"] then return end
+  if not entity or not handlers[type] then return end
 
   local defaults = handlers.defaults(entity, player_index)
   local window = player.gui.relative.add{
@@ -177,7 +185,7 @@ local function update_subgui(entity, player_index)
     caption = { "ds-window.frame" },
     direction = "vertical",
     anchor = {
-      gui = defines.relative_gui_type[type:gsub("-", "_") .. "_gui"],
+      gui = defines.relative_gui_type[type:gsub("-", "_") .. "_gui"] or turret_guis[type] or defines.relative_gui_type.entity_with_energy_source_gui,
       position = defines.relative_gui_position.left
     }
   }.add{
