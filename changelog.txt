@@ -17,6 +17,7 @@ Date: ????
     - Added accumulator support
     - Added assembling machine support
     - Added wall support
+    - Added mining drill support
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.9
 Date: 2025-12-04

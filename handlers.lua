@@ -493,7 +493,49 @@ handlers["logistic-container"] = {
     "circuit_condition"
   }
 }
--- handlers["mining-drill"] = {}
+handlers["mining-drill"] = {
+  circuit_settings = {
+    "circuit_enable_disable",
+    "circuit_condition",
+    "connect_to_logistic_network",
+    "logistic_condition",
+
+    "circuit_read_resources",
+    "resource_read_mode"
+  },
+  basic_entity_settings = {
+    mining_drill_filter_mode = "whitelist",
+  },
+  save_entity_settings = function (entity, player_index)
+    local defaults = handlers.defaults(entity, player_index)
+    defaults.entity_settings = {filters = {}}
+    for i = 1, entity.filter_slot_count do
+      defaults.entity_settings.filters[i] = entity.get_filter(i)
+    end
+  end,
+  apply_entity_settings = function (entity, player_index)
+    local defaults = handlers.defaults(entity, player_index)
+    -- clear old filters
+    for i = 1, entity.filter_slot_count do
+      entity.set_filter(i)
+    end
+    -- set new filters manually, only fills as many as required
+    for i = 1, entity.filter_slot_count do
+      entity.set_filter(i, defaults.entity_settings.filters[i])
+    end
+  end,
+  clear_entity_settings = function (entity)
+    for i = 1, entity.filter_slot_count do
+      entity.set_filter(i)
+    end
+  end,
+  is_default = function (entity)
+    for i = 1, entity.filter_slot_count do
+      if entity.get_filter(i) then return false end
+    end
+    return true
+  end
+}
 -- handlers["offshore-pump"] = {}
 handlers["power-switch"] = {
   circuit_settings = {
