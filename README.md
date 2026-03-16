@@ -6,12 +6,12 @@ Allows you to save alternate default setting states for the circuit and entity s
 
 Certain entities, when you save parameters in their data, allow you to configure them on-place like you would blueprints. Note this currently only works for entity settings, not circuit settings. I haven't figured out a good method for those yet.
 
-Currently supported:
+Currently support parameters:
 - inserter
 - assembling machine
 - asteroid collector
 
-Not yet supported:
+Not yet supporting parameters:
 - display panel
 - furnace
 - programmable speaker
