@@ -48,4 +48,5 @@ Might do eventually (more likely if requested):
 
 Requested by and thumbnail created by JigSaW on Discord.
 
+My mods are made 100% by humans, with no AI code or graphics.
 If you have a mod idea, let me know and I can look into it.

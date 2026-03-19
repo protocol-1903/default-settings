@@ -4,7 +4,8 @@
   "title": "Default Settings",
   "description": "Allows you to save alternate default setting states for the circuit and entity settings. Requested by JigSaW on Discord.",
   "author": "protocol_1903",
-  "homepage": "https://discord.gg/K3fXMGVc4z",
+  "contact": "https://discord.gg/K3fXMGVc4z",
+  "homepage": "https://github.com/protocol-1903/default-settings",
   "factorio_version": "2.0",
   "dependencies": [
     "base",
