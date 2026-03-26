@@ -400,20 +400,6 @@ script.on_event(defines.events.on_circuit_wire_removed, function (event)
   end
 end)
 
--- handle the case where one entity was removed (this is ignored in the previous handler)
----@param event EventData.on_circuit_network_destroyed
-script.on_event(defines.events.on_circuit_network_destroyed, function (event)
-  if not event.player_index then return end
-  if event.source and event.source.get_wire_connector(event.source_connector_id - (event.source_connector_id + 1) % 2 + 1, true).connection_count == 0 then
-    handlers.clear_circuit_settings(event.source)
-  end
-  for _, tuple in pairs(event.destinations) do
-    if tuple.entity and tuple.entity.get_wire_connector(tuple.connector_id - (tuple.connector_id + 1) % 2 + 1, true).connection_count == 0 then
-      handlers.clear_circuit_settings(tuple.entity)
-    end
-  end
-end)
-
 script.on_event(defines.events.on_lua_shortcut, function (event)
   if event.prototype_name == "default-settings-show-gui" then
     game.get_player(event.player_index).set_shortcut_toggled(
