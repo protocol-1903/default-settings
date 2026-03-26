@@ -413,7 +413,6 @@ script.on_event(defines.events.on_circuit_network_destroyed, function (event)
 end)
 
 script.on_event(defines.events.on_lua_shortcut, function (event)
-  log(event.prototype_name)
   if event.prototype_name == "default-settings-show-gui" then
     game.get_player(event.player_index).set_shortcut_toggled(
       "default-settings-show-gui",

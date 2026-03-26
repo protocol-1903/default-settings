@@ -131,7 +131,7 @@ handlers.save_circuit_settings = function (entity, player_index)
   -- load relevant circuit settings
   local control_behavior = entity.get_or_create_control_behavior()
   if control_behavior then
-    for _, index in pairs(handlers[type].circuit_settings or {}) do
+    for index in pairs(handlers[type].circuit_settings or {}) do
       defaults.circuit_settings[index] = control_behavior[index]
     end
   end
@@ -159,8 +159,8 @@ handlers.clear_circuit_settings = function (entity)
   local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
   local control_behavior = entity.get_or_create_control_behavior(true)
   if not handlers[type] or not control_behavior then return end
-  for _, index in pairs(handlers[type].circuit_settings or {}) do
-    control_behavior[index] = handlers.default_circuit_condition(index, type) or false
+  for index, value in pairs(handlers[type].circuit_settings or {}) do
+    control_behavior[index] = value
   end
 end
 
@@ -169,8 +169,8 @@ handlers.is_circuit_default = function (entity)
   local control_behavior = entity.get_or_create_control_behavior()
   local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
   if handlers[type] and control_behavior then
-    for _, index in pairs(handlers[type].circuit_settings or {}) do
-      if not handlers.equal(handlers.default_circuit_condition(index, type), control_behavior[index]) then return false end
+    for index, value in pairs(handlers[type].circuit_settings or {}) do
+      if not handlers.equal(value, control_behavior[index]) then return false end
     end
   end
   return true
@@ -193,80 +193,12 @@ handlers.is_circuit_custom_default = function (entity, player_index)
   local defaults = handlers.defaults(entity, player_index)
   if not defaults.circuit_settings then return false end
   local control_behavior = entity.get_or_create_control_behavior()
-  -- return handlers.compare(defaults.circuit_settings, control_behavior)
   if control_behavior then
     for index, value in pairs(defaults.circuit_settings or {}) do
       if not handlers.equal(value, control_behavior[index]) then return false end
     end
   end
   return true
-end
-
--- default state for circuit settings, if anything is amiss it will be overridden
--- these are exceptions, "true" default is off/false
-handlers.default_circuit_condition = function(index, type)
-  if index == "circuit_condition" or index == "logistic_condition" or index == "ignore_unlisted_targets_condition" then
-    return {comparator = "<", constant = 0}
-  elseif index == "include_in_crafting" or index == "open_gate" then
-    return true
-  elseif index == "circuit_recipe_finished_signal" or index == "circuit_working_signal" or index == "damage_taken_signal" or index == "circuit_read_resources" then
-    return {}
-  elseif index == "circuit_exclusive_mode_of_operation" and type == "cargo-landing-pad" then
-    return defines.control_behavior.cargo_landing_pad.exclusive_mode.send_contents
-  elseif index == "circuit_hand_read_mode" and type == "inserter" then
-    return defines.control_behavior.inserter.hand_read_mode.pulse
-  elseif index == "color_mode" then
-    return defines.control_behavior.lamp.color_mode.color_mapping
-  elseif index == "circuit_exclusive_mode_of_operation" and type == "logistic-container" then
-    return defines.control_behavior.logistic_container.exclusive_mode.send_contents
-  elseif index == "resource_read_mode" then
-    return defines.control_behavior.mining_drill.resource_read_mode.this_miner
-  elseif index == "circuit_parameters" then
-    return -- something to add here aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa for progrmmable speaker
-  elseif index == "read_contents_mode" then
-    return defines.control_behavior.transport_belt.content_read_mode.pulse
-  elseif index == "read_items_mode" then
-    return defines.control_behavior.roboport.read_items_mode.logistics
-  elseif index == "read_mode" then
-    return defines.control_behavior.rocket_silo.read_mode.orbital_requests -- TODO CHECK WITH SA
-  elseif index == "speed_signal" then
-    return -- CHECK AGAIN ijdoqwe jdijoewjoqjoidjewqojdeoiwqjiodew
-  elseif index == "damage_taken_signal" then
-    return -- something idk djiewqjiodjeiwqjiodjeiowqjoidjeowiqj
-  elseif index == "red_signal" then
-    return {type = "virtual", name = "signal-red"}
-  elseif index == "orange_signal" then
-    return {type = "virtual", name = "signal-yellow"}
-  elseif index == "green_signal" then
-    return {type = "virtual", name = "signal-green"}
-  elseif index == "blue_signal" then
-    return {type = "virtual", name = "signal-blue"}
-  elseif index == "rgb_signal" then
-    return {type = "virtual", name = "signal-white"}
-  elseif index == "output_signal" and type == "accumulator" then
-    return {type = "virtual", name = "signal-A"}
-  elseif index == "trains_count_signal" then
-    return {type = "virtual", name = "signal-C"}
-  elseif index == "output_signal" and type == "wall" then
-    return {type = "virtual", name = "signal-G"}
-  elseif index == "trains_limit_signal" then
-    return {type = "virtual", name = "signal-L"}
-  elseif index == "priority_signal" then
-    return {type = "virtual", name = "signal-P"}
-  elseif index == "roboport_count_output_signal" then
-    return {type = "virtual", name = "signal-R"}
-  elseif index == "circuit_stack_control_signal" then
-    return {type = "virtual", name = "signal-S"}
-  elseif index == "total_construction_output_signal" or index == "stopped_train_signal" or index == "temperature_signal" then
-    return {type = "virtual", name = "signal-T"}
-  elseif index == "available_logistic_output_signal" then
-    return {type = "virtual", name = "signal-X"}
-  elseif index == "total_logistic_output_signal" then
-    return {type = "virtual", name = "signal-Y"}
-  elseif index == "available_construction_output_signal" then
-    return {type = "virtual", name = "signal-Z"}
-  end
-  return false
 end
 
 local comparators = {
@@ -281,31 +213,31 @@ local comparators = {
 
 handlers["accumulator"] = {
   circuit_settings = {
-    "read_charge",
-    "output_signal"
+    read_charge = true,
+    output_signal = {type = "virtual", name = "signal-A"}
   }
 }
 handlers["agricultural-tower"] = {
   circuit_settings = {
-    "circuit_enable_disable",
-    "circuit_condition",
-    "connect_to_logistic_network",
-    "logistic_condition",
+    circuit_enable_disable = false,
+    circuit_condition = {comparator = "<", constant = 0},
+    connect_to_logistic_network = false,
+    logistic_condition = {comparator = "<", constant = 0},
 
-    "read_contents"
+    read_contents = false
   },
 }
 handlers["ammo-turret"] = {
   circuit_settings = {
-    "circuit_enable_disable",
-    "circuit_condition",
-    "connect_to_logistic_network",
-    "logistic_condition",
+    circuit_enable_disable = false,
+    circuit_condition = {comparator = "<", constant = 0},
+    connect_to_logistic_network = false,
+    logistic_condition = {comparator = "<", constant = 0},
 
-    "set_priority_list",
-    "set_ignore_unlisted_targets",
-    "ignore_unlisted_targets_condition",
-    "read_ammo"
+    set_priority_list = false,
+    set_ignore_unlisted_targets = false,
+    ignore_unlisted_targets_condition = {comparator = "<", constant = 0},
+    read_ammo = false
   },
   basic_entity_settings = {
     ignore_unprioritised_targets = false
@@ -339,12 +271,12 @@ handlers["ammo-turret"] = {
 }
 handlers["artillery-turret"] = {
   circuit_settings = {
-    "circuit_enable_disable",
-    "circuit_condition",
-    "connect_to_logistic_network",
-    "logistic_condition",
+    circuit_enable_disable = false,
+    circuit_condition = {comparator = "<", constant = 0},
+    connect_to_logistic_network = false,
+    logistic_condition = {comparator = "<", constant = 0},
 
-    "read_ammo"
+    read_ammo = false
   },
   basic_entity_settings = {
     artillery_auto_targeting = true
@@ -352,20 +284,20 @@ handlers["artillery-turret"] = {
 }
 handlers["assembling-machine"] = {
   circuit_settings = {
-    "circuit_enable_disable",
-    "circuit_condition",
-    "connect_to_logistic_network",
-    "logistic_condition",
+    circuit_enable_disable = false,
+    circuit_condition = {comparator = "<", constant = 0},
+    connect_to_logistic_network = false,
+    logistic_condition = {comparator = "<", constant = 0},
 
-    "circuit_set_recipe",
-    "circuit_read_contents",
-    "include_in_crafting",
-    "include_fuel",
-    "circuit_read_ingredients",
-    "circuit_read_recipe_finished",
-    "circuit_recipe_finished_signal",
-    "circuit_read_working",
-    "circuit_working_signal"
+    circuit_set_recipe = false,
+    circuit_read_contents = false,
+    include_in_crafting = true,
+    include_fuel = false,
+    circuit_read_ingredients = false,
+    circuit_read_recipe_finished = false,
+    circuit_recipe_finished_signal = nil,
+    circuit_read_working = false,
+    circuit_working_signal = nil
   },
   save_entity_settings = function (entity, player_index)
     local defaults = handlers.defaults(entity, player_index)
@@ -396,14 +328,14 @@ handlers["assembling-machine"] = {
 }
 handlers["asteroid-collector"] = {
   circuit_settings = {
-    "circuit_enable_disable",
-    "circuit_condition",
-    "connect_to_logistic_network",
-    "logistic_condition",
+    circuit_enable_disable = false,
+    circuit_condition = {comparator = "<", constant = 0},
+    connect_to_logistic_network = false,
+    logistic_condition = {comparator = "<", constant = 0},
 
-    "set_filter",
-    "read_contents",
-    "include_hands"
+    set_filter = false,
+    read_contents = false,
+    include_hands = true
   },
   save_entity_settings = function (entity, player_index)
     local defaults = handlers.defaults(entity, player_index)
@@ -456,21 +388,21 @@ handlers["asteroid-collector"] = {
     end
   end
 }
-handlers["display-panel"] = {
-  circuit_settings = {
-    "messages"
-  }
-}
+-- handlers["display-panel"] = {
+--   circuit_settings = {
+--     "messages"
+--   }
+-- }
 handlers["electric-turret"] = {
   circuit_settings = {
-    "circuit_enable_disable",
-    "circuit_condition",
-    "connect_to_logistic_network",
-    "logistic_condition",
+    circuit_enable_disable = false,
+    circuit_condition = {comparator = "<", constant = 0},
+    connect_to_logistic_network = false,
+    logistic_condition = {comparator = "<", constant = 0},
 
-    "set_priority_list",
-    "set_ignore_unlisted_targets",
-    "ignore_unlisted_targets_condition"
+    set_priority_list = false,
+    set_ignore_unlisted_targets = false,
+    ignore_unlisted_targets_condition = {comparator = "<", constant = 0}
   },
   basic_entity_settings = {
     ignore_unprioritised_targets = false
@@ -504,15 +436,15 @@ handlers["electric-turret"] = {
 }
 handlers["fluid-turret"] = {
   circuit_settings = {
-    "circuit_enable_disable",
-    "circuit_condition",
-    "connect_to_logistic_network",
-    "logistic_condition",
+    circuit_enable_disable = false,
+    circuit_condition = {comparator = "<", constant = 0},
+    connect_to_logistic_network = false,
+    logistic_condition = {comparator = "<", constant = 0},
 
-    "set_priority_list",
-    "set_ignore_unlisted_targets",
-    "ignore_unlisted_targets_condition",
-    "read_ammo"
+    set_priority_list = false,
+    set_ignore_unlisted_targets = false,
+    ignore_unlisted_targets_condition = {comparator = "<", constant = 0},
+    read_ammo = false
   },
   basic_entity_settings = {
     ignore_unprioritised_targets = false
@@ -546,32 +478,33 @@ handlers["fluid-turret"] = {
 }
 handlers["furnace"] = {
   circuit_settings = {
-    "circuit_enable_disable",
-    "circuit_condition",
-    "connect_to_logistic_network",
-    "logistic_condition",
+    circuit_enable_disable = false,
+    circuit_condition = {comparator = "<", constant = 0},
+    connect_to_logistic_network = false,
+    logistic_condition = {comparator = "<", constant = 0},
 
-    "circuit_read_contents",
-    "include_in_crafting",
-    "include_fuel",
-    "circuit_read_recipe_finished",
-    "circuit_recipe_finished_signal",
-    "circuit_read_working",
-    "circuit_working_signal"
+    circuit_read_contents = false,
+    include_in_crafting = true,
+    include_fuel = false,
+    circuit_read_ingredients = false,
+    circuit_read_recipe_finished = false,
+    circuit_recipe_finished_signal = nil,
+    circuit_read_working = false,
+    circuit_working_signal = nil
   }
 }
 handlers["inserter"] = {
   circuit_settings = {
-    "circuit_enable_disable",
-    "circuit_condition",
-    "connect_to_logistic_network",
-    "logistic_condition",
+    circuit_enable_disable = false,
+    circuit_condition = {comparator = "<", constant = 0},
+    connect_to_logistic_network = false,
+    logistic_condition = {comparator = "<", constant = 0},
 
-    "circuit_set_filters",
-    "circuit_read_hand_contents",
-    "circuit_hand_read_mode",
-    "circuit_set_stack_size",
-    "circuit_stack_control_signal"
+    circuit_set_filters = false,
+    circuit_read_hand_contents = false,
+    circuit_hand_read_mode = defines.control_behavior.inserter.hand_read_mode.pulse,
+    circuit_set_stack_size = false,
+    circuit_stack_control_signal = {type = "virtual", name = "signal-S"}
   },
   basic_entity_settings = {
     use_filters = false,
@@ -637,17 +570,17 @@ handlers["inserter"] = {
 }
 handlers["lamp"] = {
   circuit_settings = {
-    "circuit_enable_disable",
-    "circuit_condition",
-    "connect_to_logistic_network",
-    "logistic_condition",
+    circuit_enable_disable = false,
+    circuit_condition = {comparator = "<", constant = 0},
+    connect_to_logistic_network = false,
+    logistic_condition = {comparator = "<", constant = 0},
 
-    "use_colors",
-    "color_mode",
-    "red_signal",
-    "green_signal",
-    "blue_signal",
-    "rgb_signal"
+    use_colors = false,
+    color_mode = defines.control_behavior.lamp.color_mode.color_mapping,
+    red_signal = {type = "virtual", name = "signal-red"},
+    green_signal = {type = "virtual", name = "signal-green"},
+    blue_signal = {type = "virtual", name = "signal-blue"},
+    rgb_signal = {type = "virtual", name = "signal-white"}
   },
   basic_entity_settings = {
     color = {255, 255, 191},
@@ -656,13 +589,13 @@ handlers["lamp"] = {
 }
 handlers["loader"] = {
   circuit_settings = {
-    "circuit_enable_disable",
-    "circuit_condition",
-    "connect_to_logistic_network",
-    "logistic_condition",
+    circuit_enable_disable = false,
+    circuit_condition = {comparator = "<", constant = 0},
+    connect_to_logistic_network = false,
+    logistic_condition = {comparator = "<", constant = 0},
 
-    "circuit_set_filters",
-    "circuit_read_transfers"
+    circuit_set_filters = false,
+    circuit_read_transfers = false
   },
   basic_entity_settings = {
     loader_filter_mode = "none",
@@ -699,22 +632,22 @@ handlers["loader"] = {
   end
 }
 handlers["loader-1x1"] = handlers["loader"]
-handlers["logistic-container"] = {
-  circuit_settings = {
-    "circuit_exclusive_mode_of_operation",
-    "circuit_condition_enabled",
-    "circuit_condition"
-  }
-}
+-- handlers["logistic-container"] = {
+--   circuit_settings = {
+--     circuit_exclusive_mode_of_operation,
+--     circuit_condition_enabled = false,
+--     circuit_condition = {comparator = "<", constant = 0}
+--   }
+-- }
 handlers["mining-drill"] = {
   circuit_settings = {
-    "circuit_enable_disable",
-    "circuit_condition",
-    "connect_to_logistic_network",
-    "logistic_condition",
+    circuit_enable_disable = false,
+    circuit_condition = {comparator = "<", constant = 0},
+    connect_to_logistic_network = false,
+    logistic_condition = {comparator = "<", constant = 0},
 
-    "circuit_read_resources",
-    "resource_read_mode"
+    circuit_read_resources = true,
+    resource_read_mode = defines.control_behavior.mining_drill.resource_read_mode.this_miner
   },
   basic_entity_settings = {
     mining_drill_filter_mode = "whitelist",
@@ -751,28 +684,28 @@ handlers["mining-drill"] = {
 }
 handlers["offshore-pump"] = {
   circuit_settings = {
-    "circuit_enable_disable",
-    "circuit_condition",
-    "connect_to_logistic_network",
-    "logistic_condition"
+    circuit_enable_disable = false,
+    circuit_condition = {comparator = "<", constant = 0},
+    connect_to_logistic_network = false,
+    logistic_condition = {comparator = "<", constant = 0}
   }
 }
 handlers["power-switch"] = {
   circuit_settings = {
-    "circuit_enable_disable",
-    "circuit_condition",
-    "connect_to_logistic_network",
-    "logistic_condition"
+    circuit_enable_disable = false,
+    circuit_condition = {comparator = "<", constant = 0},
+    connect_to_logistic_network = false,
+    logistic_condition = {comparator = "<", constant = 0}
   },
   basic_entity_settings = {
     power_switch_state = false
   }
 }
 handlers["programmable-speaker"] = {
-  circuit_settings = {
-    "circuit_condition",
-    "circuit_parameters"
-  },
+  -- circuit_settings = {
+  --   circuit_condition = {comparator = "<", constant = 0},
+  --   circuit_parameters = 
+  -- },
   basic_entity_settings = {
     parameters = {
       allow_polyphony = false,
@@ -789,36 +722,35 @@ handlers["programmable-speaker"] = {
 }
 handlers["pump"] = {
   circuit_settings = {
-    "circuit_enable_disable",
-    "circuit_condition",
-    "connect_to_logistic_network",
-    "logistic_condition",
+    circuit_enable_disable = false,
+    circuit_condition = {comparator = "<", constant = 0},
+    connect_to_logistic_network = false,
+    logistic_condition = {comparator = "<", constant = 0},
 
-    "set_filter"
+    set_filter = false
   }
 }
 handlers["reactor"] = {
   circuit_settings = {
-    "read_fuel",
-    "read_temperature",
-    "temperature_signal"
+    read_fuel = false,
+    read_temperature = false,
+    temperature_signal = {type = "virtual", name = "signal-T"}
   }
 }
 handlers["roboport"] = {
   circuit_settings = {
-    "read_items_mode",
-    "read_logistics",
-    "read_robot_stats",
-    "available_logistic_output_signal",
-    "total_logistic_output_signal",
-    "available_construction_output_signal",
-    "total_construction_output_signal",
-    "roboport_count_output_signal"
+    read_items_mode = defines.control_behavior.roboport.read_items_mode.logistics,
+    read_robot_stats = false,
+    available_logistic_output_signal = {type = "virtual", name = "signal-X"},
+    total_logistic_output_signal = {type = "virtual", name = "signal-Y"},
+    available_construction_output_signal = {type = "virtual", name = "signal-Z"},
+    total_construction_output_signal = {type = "virtual", name = "signal-T"},
+    roboport_count_output_signal = {type = "virtual", name = "signal-R"}
   }
 }
 handlers["rocket-silo"] = {
   circuit_settings = {
-    "read_mode"
+    read_mode = defines.control_behavior.rocket_silo.read_mode.logistic_inventory
   },
   basic_entity_settings = {
     send_to_orbit_automatically = false,
@@ -827,13 +759,13 @@ handlers["rocket-silo"] = {
 }
 handlers["splitter"] = {
   circuit_settings = {
-    "set_input_filter",
-    "input_left_condition",
-    "input_right_condition",
-    "set_output_side",
-    "output_left_condition",
-    "output_right_condition",
-    "set_filter"
+    set_input_side = false,
+    input_left_condition = {first_signal = {type = "virtual", name = "signal-I"}, comparator = "<", constant = 0},
+    input_right_condition = {first_signal = {type = "virtual", name = "signal-I"}, comparator = ">", constant = 0},
+    set_output_side = false,
+    output_left_condition = {first_signal = {type = "virtual", name = "signal-O"}, comparator = "<", constant = 0},
+    output_right_condition = {first_signal = {type = "virtual", name = "signal-O"}, comparator = ">", constant = 0},
+    set_filter = false
   },
   basic_entity_settings = {
     splitter_filter = {},
@@ -844,26 +776,26 @@ handlers["splitter"] = {
 handlers["lane-splitter"] = handlers["splitter"]
 handlers["storage-tank"] = {
   circuit_settings = {
-    "read_contents"
+    read_contents = true
   }
 }
 handlers["train-stop"] = {
   circuit_settings = {
-    "circuit_enable_disable",
-    "circuit_condition",
-    "connect_to_logistic_network",
-    "logistic_condition",
+    circuit_enable_disable = false,
+    circuit_condition = {comparator = "<", constant = 0},
+    connect_to_logistic_network = false,
+    logistic_condition = {comparator = "<", constant = 0},
 
-    "send_to_train",
-    "read_from_train",
-    "read_stopped_train",
-    "set_trains_limit",
-    "read_trains_count",
-    "stopped_train_signal",
-    "trains_count_signal",
-    "trains_limit_signal",
-    "set_priority",
-    "priority_signal"
+    send_to_train = true,
+    set_trains_limit = false,
+    trains_limit_signal = {type = "virtual", name = "signal-L"},
+    read_from_train = false,
+    read_stopped_train = false,
+    stopped_train_signal = {type = "virtual", name = "signal-T"},
+    read_trains_count = false,
+    trains_count_signal = {type = "virtual", name = "signal-C"},
+    set_priority = false,
+    priority_signal = {type = "virtual", name = "signal-P"}
   },
   basic_entity_settings = {
 
@@ -871,25 +803,25 @@ handlers["train-stop"] = {
 }
 handlers["transport-belt"] = {
   circuit_settings = {
-    "circuit_enable_disable",
-    "circuit_condition",
-    "connect_to_logistic_network",
-    "logistic_condition",
+    circuit_enable_disable = false,
+    circuit_condition = {comparator = "<", constant = 0},
+    connect_to_logistic_network = false,
+    logistic_condition = {comparator = "<", constant = 0},
 
-    "read_contents",
-    "read_contents_mode"
+    read_contents = false,
+    read_contents_mode = defines.control_behavior.transport_belt.content_read_mode.pulse
   }
 }
 handlers["turret"] = {
   circuit_settings = {
-    "circuit_enable_disable",
-    "circuit_condition",
-    "connect_to_logistic_network",
-    "logistic_condition",
+    circuit_enable_disable = false,
+    circuit_condition = {comparator = "<", constant = 0},
+    connect_to_logistic_network = false,
+    logistic_condition = {comparator = "<", constant = 0},
 
-    "set_priority_list",
-    "set_ignore_unlisted_targets",
-    "ignore_unlisted_targets_condition"
+    set_priority_list = false,
+    set_ignore_unlisted_targets = false,
+    ignore_unlisted_targets_condition = {comparator = "<", constant = 0}
   },
   basic_entity_settings = {
     ignore_unprioritised_targets = false
@@ -923,10 +855,10 @@ handlers["turret"] = {
 }
 handlers["wall"] = {
   circuit_settings = {
-    "circuit_condition",
-    "open_gate",
-    "read_sensor",
-    "output_signal"
+    open_gate = true,
+    circuit_condition = {comparator = "<", constant = 0},
+    read_sensor = false,
+    output_signal = {type = "virtual", name = "signal-G"}
   }
 }
 
