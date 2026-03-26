@@ -77,7 +77,7 @@ handlers.apply_entity_settings = function (entity, player_index)
   local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
   -- apply basic settings (R/W values)
   for index, value in pairs(defaults.basic_entity_settings or {}) do
-    entity[index] = value
+    entity[index] = handlers.get_nan_eq(value)
   end
   if not defaults.entity_settings or not handlers[type].apply_entity_settings then return end
   handlers[type].apply_entity_settings(entity, player_index)
@@ -94,7 +94,7 @@ handlers.clear_entity_settings = function (entity)
   local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
   if not handlers[type] then return end
   for index, value in pairs(handlers[type].basic_entity_settings or {}) do
-    entity[index] = value
+    entity[index] = handlers.get_nan_eq(value)
   end
   if not handlers[type].clear_entity_settings then return end
   handlers[type].clear_entity_settings(entity)
@@ -105,8 +105,8 @@ handlers.is_default = function (entity)
   local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
   if not handlers[type] then return false end
   -- save basic settings (R/W values)
-  for index, default in pairs(handlers[type].basic_entity_settings or {}) do
-    if not handlers.equal(default, entity[index]) then return false end
+  for index, value in pairs(handlers[type].basic_entity_settings or {}) do
+    if not handlers.equal(handlers.get_nan_eq(value), entity[index]) then return false end
   end
   return handlers[type].is_default and handlers[type].is_default(entity) or true
 end
@@ -144,7 +144,7 @@ handlers.apply_circuit_settings = function (entity, player_index)
   local control_behavior = entity.get_or_create_control_behavior()
   if control_behavior then
     for index, value in pairs(defaults.circuit_settings or {}) do
-      control_behavior[index] = value
+      control_behavior[index] = handlers.get_nan_eq(value)
     end
   end
 end
@@ -160,7 +160,7 @@ handlers.clear_circuit_settings = function (entity)
   local control_behavior = entity.get_or_create_control_behavior(true)
   if not handlers[type] or not control_behavior then return end
   for index, value in pairs(handlers[type].circuit_settings or {}) do
-    control_behavior[index] = value
+    control_behavior[index] = handlers.get_nan_eq(value)
   end
 end
 
@@ -170,7 +170,7 @@ handlers.is_circuit_default = function (entity)
   local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
   if handlers[type] and control_behavior then
     for index, value in pairs(handlers[type].circuit_settings or {}) do
-      if not handlers.equal(value, control_behavior[index]) then return false end
+      if not handlers.equal(handlers.get_nan_eq(value), control_behavior[index]) then return false end
     end
   end
   return true
@@ -195,10 +195,15 @@ handlers.is_circuit_custom_default = function (entity, player_index)
   local control_behavior = entity.get_or_create_control_behavior()
   if control_behavior then
     for index, value in pairs(defaults.circuit_settings or {}) do
-      if not handlers.equal(value, control_behavior[index]) then return false end
+      if not handlers.equal(handlers.get_nan_eq(value), control_behavior[index]) then return false end
     end
   end
   return true
+end
+
+local nan = "1GTTkEMVwZiJ7O30Bt3s" -- noncompare string for entries that exist, but are default nil
+handlers.get_nan_eq = function(input)
+  return input ~= nan and input or nil
 end
 
 local comparators = {
@@ -295,9 +300,9 @@ handlers["assembling-machine"] = {
     include_fuel = false,
     circuit_read_ingredients = false,
     circuit_read_recipe_finished = false,
-    circuit_recipe_finished_signal = nil,
+    circuit_recipe_finished_signal = nan,
     circuit_read_working = false,
-    circuit_working_signal = nil
+    circuit_working_signal = nan
   },
   save_entity_settings = function (entity, player_index)
     local defaults = handlers.defaults(entity, player_index)
@@ -488,9 +493,9 @@ handlers["furnace"] = {
     include_fuel = false,
     circuit_read_ingredients = false,
     circuit_read_recipe_finished = false,
-    circuit_recipe_finished_signal = nil,
+    circuit_recipe_finished_signal = nan,
     circuit_read_working = false,
-    circuit_working_signal = nil
+    circuit_working_signal = nan
   }
 }
 handlers["inserter"] = {
@@ -798,7 +803,9 @@ handlers["train-stop"] = {
     priority_signal = {type = "virtual", name = "signal-P"}
   },
   basic_entity_settings = {
-
+    color = nan,
+    trains_limit = nan,
+    train_stop_priority = 50
   }
 }
 handlers["transport-belt"] = {
