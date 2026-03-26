@@ -407,8 +407,10 @@ script.on_event(defines.events.on_circuit_network_destroyed, function (event)
   if event.source and event.source.get_wire_connector(event.source_connector_id - (event.source_connector_id + 1) % 2 + 1, true).connection_count == 0 then
     handlers.clear_circuit_settings(event.source)
   end
-  if event.destination and event.destination.get_wire_connector(event.destination_connector_id - (event.destination_connector_id + 1) % 2 + 1, true).connection_count == 0 then
-    handlers.clear_circuit_settings(event.destination)
+  for _, tuple in pairs(event.destinations) do
+    if tuple.entity and tuple.entity.get_wire_connector(tuple.connector_id - (tuple.connector_id + 1) % 2 + 1, true).connection_count == 0 then
+      handlers.clear_circuit_settings(tuple.entity)
+    end
   end
 end)
 
