@@ -3,6 +3,7 @@ Version: 1.1.1
 Date: ????
   Changes:
     - Store references to each circuit setting's default value in the reference instead of generically
+    - Added artillery wagon support
   Bugfixes:
     - Fixed a crash when removing circuit wires from an assembler. Resolves https://github.com/protocol-1903/default-settings/issues/11
 ---------------------------------------------------------------------------------------------------

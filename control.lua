@@ -156,9 +156,10 @@ local function apply_parameters(player_index)
   player.play_sound{path = "utility/confirm"}
 end
 
-local turret_guis = {
+local alt_guis = {
   ["ammo-turret"] = defines.relative_gui_type.turret_gui,
-  ["artillery-turret"] = defines.relative_gui_type.turret_gui,
+  ["artillery-turret"] = defines.relative_gui_type.container_gui,
+  ["artillery-wagon"] = defines.relative_gui_type.container_gui,
   ["electric-turret"] = defines.relative_gui_type.turret_gui,
   ["fluid-turret"] = defines.relative_gui_type.turret_gui,
   ["turret"] = defines.relative_gui_type.turret_gui,
@@ -185,7 +186,7 @@ local function update_subgui(entity, player_index)
     caption = { "ds-window.frame" },
     direction = "vertical",
     anchor = {
-      gui = defines.relative_gui_type[type:gsub("-", "_") .. "_gui"] or turret_guis[type] or defines.relative_gui_type.entity_with_energy_source_gui,
+      gui = defines.relative_gui_type[type:gsub("-", "_") .. "_gui"] or alt_guis[type] or defines.relative_gui_type.entity_with_energy_source_gui,
       position = defines.relative_gui_position.left
     }
   }.add{
