@@ -47,7 +47,7 @@ handlers.defaults = function (entity, player_index)
     metadata.individual[name] = {individual = false}
   end
 
-  return metadata.individual[name].individual and metadata.individual[name] or metadata[type]
+  return (metadata.individual[name].individual or handlers[type].forced_individual) and metadata.individual[name] or metadata[type]
 end
 
 handlers.enable_individual_settings = function (entity, player_index)
@@ -86,8 +86,11 @@ end
 handlers.delete_entity_settings = function (entity, player_index)
   local defaults = handlers.defaults(entity, player_index)
   if not defaults then return end
+  local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
   defaults.basic_entity_settings = nil
   defaults.entity_settings = nil
+  if not handlers[type].delete_entity_settings then return end
+  handlers[type].delete_entity_settings(entity)
 end
 
 handlers.clear_entity_settings = function (entity)
@@ -130,29 +133,35 @@ handlers.save_circuit_settings = function (entity, player_index)
   defaults.circuit_settings = {}
   -- load relevant circuit settings
   local control_behavior = entity.get_or_create_control_behavior()
-  if control_behavior then
-    for index in pairs(handlers[type].circuit_settings or {}) do
-      defaults.circuit_settings[index] = control_behavior[index]
-    end
+  if not control_behavior then return end
+  for index in pairs(handlers[type].circuit_settings or {}) do
+    defaults.circuit_settings[index] = control_behavior[index]
   end
+  if not handlers[type].save_circuit_settings then return end
+  handlers[type].save_circuit_settings(entity, player_index)
 end
 
 handlers.apply_circuit_settings = function (entity, player_index)
   local defaults = handlers.defaults(entity, player_index)
   if not defaults then return end
+  local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
   -- load relevant circuit settings
   local control_behavior = entity.get_or_create_control_behavior()
-  if control_behavior then
-    for index, value in pairs(defaults.circuit_settings or {}) do
-      control_behavior[index] = handlers.get_nan_eq(value)
-    end
+  if not control_behavior then return end
+  for index, value in pairs(defaults.circuit_settings or {}) do
+    control_behavior[index] = handlers.get_nan_eq(value)
   end
+  if not handlers[type].apply_circuit_settings then return end
+  handlers[type].apply_circuit_settings(entity, player_index)
 end
 
 handlers.delete_circuit_settings = function (entity, player_index)
   local defaults = handlers.defaults(entity, player_index)
   if not defaults then return end
+  local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
   defaults.circuit_settings = nil
+  if not handlers[type].delete_circuit_settings then return end
+  handlers[type].delete_circuit_settings(entity, player_index)
 end
 
 handlers.clear_circuit_settings = function (entity)
@@ -162,18 +171,23 @@ handlers.clear_circuit_settings = function (entity)
   for index, value in pairs(handlers[type].circuit_settings or {}) do
     control_behavior[index] = handlers.get_nan_eq(value)
   end
+  if not handlers[type].clear_circuit_settings then return end
+  handlers[type].clear_circuit_settings(entity)
 end
 
 -- vanilla circuit settings
 handlers.is_circuit_default = function (entity)
   local control_behavior = entity.get_or_create_control_behavior()
   local type = entity.type == "entity-ghost" and entity.ghost_type or entity.type
-  if handlers[type] and control_behavior then
+  if handlers[type] and not control_behavior then
+    return true
+  elseif handlers[type] and control_behavior then
     for index, value in pairs(handlers[type].circuit_settings or {}) do
       if not handlers.equal(handlers.get_nan_eq(value), control_behavior[index]) then return false end
     end
   end
-  return true
+  if not handlers[type].is_circuit_default then return true end
+  return handlers[type].is_circuit_default(entity)
 end
 
 handlers.get_circuit_parameters = function (entity)
@@ -193,12 +207,12 @@ handlers.is_circuit_custom_default = function (entity, player_index)
   local defaults = handlers.defaults(entity, player_index)
   if not defaults.circuit_settings then return false end
   local control_behavior = entity.get_or_create_control_behavior()
-  if control_behavior then
-    for index, value in pairs(defaults.circuit_settings or {}) do
-      if not handlers.equal(handlers.get_nan_eq(value), control_behavior[index]) then return false end
-    end
+  if not control_behavior then return false end
+  for index, value in pairs(defaults.circuit_settings or {}) do
+    if not handlers.equal(handlers.get_nan_eq(value), control_behavior[index]) then return false end
   end
-  return true
+  if not handlers[type].is_circuit_custom_default then return true end
+  return handlers[type].is_circuit_custom_default(entity, player_index)
 end
 
 local nan = "1GTTkEMVwZiJ7O30Bt3s" -- noncompare string for entries that exist, but are default nil
@@ -642,13 +656,208 @@ handlers["loader"] = {
   end
 }
 handlers["loader-1x1"] = handlers["loader"]
--- handlers["logistic-container"] = {
---   circuit_settings = {
---     circuit_exclusive_mode_of_operation,
---     circuit_condition_enabled = false,
---     circuit_condition = {comparator = "<", constant = 0}
---   }
--- }
+handlers["logistic-container"] = {
+  forced_individual = true, -- forces settings to be per-prototype instead of global
+  ["active-provider"] = {
+    circuit_settings = {
+      circuit_exclusive_mode_of_operation = defines.control_behavior.logistic_container.exclusive_mode.send_contents,
+      circuit_condition_enabled = false,
+      circuit_condition = {comparator = "<", constant = 0}
+    }
+  },
+  ["passive-provider"] = {
+    circuit_settings = {
+      circuit_exclusive_mode_of_operation = defines.control_behavior.logistic_container.exclusive_mode.send_contents,
+      circuit_condition_enabled = false,
+      circuit_condition = {comparator = "<", constant = 0}
+    }
+  },
+  ["storage"] = {
+    circuit_settings = {
+      circuit_exclusive_mode_of_operation = defines.control_behavior.logistic_container.exclusive_mode.send_contents,
+      circuit_condition_enabled = false,
+      circuit_condition = {comparator = "<", constant = 0}
+    },
+    save_entity_settings = function (entity, defaults)
+      defaults.filter = entity.storage_filter
+    end,
+    apply_entity_settings = function (entity, defaults)
+      entity.storage_filter = defaults.filter
+    end,
+    clear_entity_settings = function (entity)
+      entity.storage_filter = nil
+    end,
+    is_default = function (entity)
+      return not entity.storage_filter
+    end
+  },
+  ["buffer"] = {
+    circuit_settings = {
+      circuit_exclusive_mode_of_operation = defines.control_behavior.logistic_container.exclusive_mode.send_contents,
+      circuit_condition_enabled = false,
+      circuit_condition = {comparator = "<", constant = 0}
+    },
+    logistic_point_settings = {
+      trash_not_requested = false
+    }
+
+  },
+  ["requester"] = {
+    circuit_settings = {
+      circuit_exclusive_mode_of_operation = defines.control_behavior.logistic_container.exclusive_mode.send_contents,
+      circuit_condition_enabled = false,
+      circuit_condition = {comparator = "<", constant = 0}
+    },
+    basic_entity_settings = {
+      request_from_buffers = false
+    },
+    logistic_point_settings = {
+      trash_not_requested = false
+    }
+  },
+
+  save_entity_settings = function (entity, player_index)
+    local defaults = handlers.defaults(entity, player_index)
+    local mode = (entity.type == "entity-ghost" and entity.ghost_prototype or entity.prototype).logistic_mode
+    if not defaults then return end
+    defaults.entity_settings = {}
+    defaults.basic_entity_settings = {}
+    defaults.logistic_point_settings = {}
+    for index in pairs(handlers["logistic-container"][mode].basic_entity_settings or {}) do
+      defaults.basic_entity_settings[index] = entity[index]
+    end
+    local point = entity.get_logistic_point(defines.logistic_member_index.logistic_container)
+    for index in pairs(handlers["logistic-container"][mode].logistic_point_settings or {}) do
+      defaults.logistic_point_settings[index] = point[index]
+    end
+    if not handlers["logistic-container"][mode].save_entity_settings then return end
+    handlers["logistic-container"][mode].save_entity_settings(entity, defaults)
+  end,
+
+  apply_entity_settings = function (entity, player_index)
+    local defaults = handlers.defaults(entity, player_index)
+    if not defaults then return end
+    local mode = (entity.type == "entity-ghost" and entity.ghost_prototype or entity.prototype).logistic_mode
+    for index, value in pairs(defaults.basic_entity_settings or {}) do
+      entity[index] = value
+    end
+    local point = entity.get_logistic_point(defines.logistic_member_index.logistic_container)
+    for index, value in pairs(defaults.logistic_point_settings or {}) do
+      point[index] = value
+    end
+    if not handlers["logistic-container"][mode].apply_entity_settings then return end
+    handlers["logistic-container"][mode].apply_entity_settings(entity, defaults)
+  end,
+
+  delete_entity_settings = function (entity, player_index)
+    local defaults = handlers.defaults(entity, player_index)
+    defaults.entity_settings = nil
+    defaults.basic_entity_settings = nil
+    defaults.logistic_point_settings = nil
+  end,
+
+  clear_entity_settings = function (entity)
+    local mode = (entity.type == "entity-ghost" and entity.ghost_prototype or entity.prototype).logistic_mode
+    for index, value in pairs(handlers["logistic-container"][mode].basic_entity_settings or {}) do
+      entity[index] = value
+    end
+    local point = entity.get_logistic_point(defines.logistic_member_index.logistic_container)
+    for index, value in pairs(handlers["logistic-container"][mode].logistic_point_settings or {}) do
+      point[index] = value
+    end
+    if not handlers["logistic-container"][mode].clear_entity_settings then return end
+    handlers["logistic-container"][mode].clear_entity_settings(entity)
+  end,
+
+  is_default = function (entity)
+    local mode = (entity.type == "entity-ghost" and entity.ghost_prototype or entity.prototype).logistic_mode
+    for index, value in pairs(handlers["logistic-container"][mode].basic_entity_settings or {}) do
+      if not handlers.equal(handlers.get_nan_eq(value), entity[index]) then return false end
+    end
+    local point = entity.get_logistic_point(defines.logistic_member_index.logistic_container)
+    for index, value in pairs(handlers["logistic-container"][mode].logistic_point_settings or {}) do
+      if not handlers.equal(handlers.get_nan_eq(value), point[index]) then return false end
+    end
+    if not handlers["logistic-container"][mode].is_default then return true end
+    return handlers["logistic-container"][mode].is_default(entity)
+  end,
+
+  save_circuit_settings = function (entity, player_index)
+    local defaults = handlers.defaults(entity, player_index)
+    if not defaults then return end
+    defaults.circuit_settings = {}
+    local control_behavior = entity.get_or_create_control_behavior()
+    if not control_behavior then return end
+    local mode = (entity.type == "entity-ghost" and entity.ghost_prototype or entity.prototype).logistic_mode
+    for index in pairs(handlers["logistic-container"][mode].circuit_settings or {}) do
+      defaults.circuit_settings[index] = control_behavior[index]
+    end
+    if not handlers["logistic-container"][mode].save_circuit_settings then return end
+    handlers["logistic-container"][mode].save_circuit_settings(entity, defaults)
+  end,
+
+  apply_circuit_settings = function (entity, player_index)
+    local defaults = handlers.defaults(entity, player_index)
+    if not defaults then return end
+    local control_behavior = entity.get_or_create_control_behavior()
+    if control_behavior then
+      for index, value in pairs(defaults.circuit_settings or {}) do
+        control_behavior[index] = handlers.get_nan_eq(value)
+      end
+    end
+    local mode = (entity.type == "entity-ghost" and entity.ghost_prototype or entity.prototype).logistic_mode
+    if not handlers["logistic-container"][mode].apply_circuit_settings then return end
+    handlers["logistic-container"][mode].apply_circuit_settings(entity, defaults)
+  end,
+
+  delete_circuit_settings = function (entity, player_index)
+    local defaults = handlers.defaults(entity, player_index)
+    if not defaults then return end
+    defaults.circuit_settings = nil
+    local mode = (entity.type == "entity-ghost" and entity.ghost_prototype or entity.prototype).logistic_mode
+    if not handlers["logistic-container"][mode].delete_circuit_settings then return end
+    handlers["logistic-container"][mode].delete_circuit_settings(entity, defaults)
+  end,
+
+  clear_circuit_settings = function (entity)
+    local control_behavior = entity.get_or_create_control_behavior(true)
+    if not control_behavior then return end
+    local mode = (entity.type == "entity-ghost" and entity.ghost_prototype or entity.prototype).logistic_mode
+    for index, value in pairs(handlers["logistic-container"][mode].circuit_settings or {}) do
+      control_behavior[index] = handlers.get_nan_eq(value)
+    end
+    if not handlers["logistic-container"][mode].clear_circuit_settings then return end
+    handlers["logistic-container"][mode].clear_circuit_settings(entity)
+  end,
+
+  -- vanilla circuit settings
+  is_circuit_default = function (entity)
+    local control_behavior = entity.get_or_create_control_behavior()
+    if not control_behavior then return true end
+    local mode = (entity.type == "entity-ghost" and entity.ghost_prototype or entity.prototype).logistic_mode
+    for index, value in pairs(handlers["logistic-container"][mode].circuit_settings or {}) do
+      if not handlers.equal(handlers.get_nan_eq(value), control_behavior[index]) then return false end
+    end
+    if not handlers["logistic-container"][mode].is_circuit_default then return true end
+    return handlers["logistic-container"][mode].is_circuit_default(entity)
+  end,
+
+  -- also returns false if no defaults exist (circuit settings)
+  is_circuit_custom_default = function (entity, player_index)
+    local defaults = handlers.defaults(entity, player_index)
+    if not defaults.circuit_settings then return false end
+    local control_behavior = entity.get_or_create_control_behavior()
+    if control_behavior then
+      for index, value in pairs(defaults.circuit_settings or {}) do
+        if not handlers.equal(handlers.get_nan_eq(value), control_behavior[index]) then return false end
+      end
+    end
+    local mode = (entity.type == "entity-ghost" and entity.ghost_prototype or entity.prototype).logistic_mode
+    if not handlers["logistic-container"][mode].is_circuit_custom_default then return true end
+    return handlers["logistic-container"][mode].is_circuit_custom_default(entity, defaults)
+  end
+}
+
 handlers["mining-drill"] = {
   circuit_settings = {
     circuit_enable_disable = false,

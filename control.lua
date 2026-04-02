@@ -163,6 +163,7 @@ local alt_guis = {
   ["electric-turret"] = defines.relative_gui_type.turret_gui,
   ["fluid-turret"] = defines.relative_gui_type.turret_gui,
   ["turret"] = defines.relative_gui_type.turret_gui,
+  ["logistic-container"] = defines.relative_gui_type.container_gui,
 }
 
 local function update_subgui(entity, player_index)
@@ -194,35 +195,37 @@ local function update_subgui(entity, player_index)
     style = "inside_shallow_frame_with_padding_and_vertical_spacing",
     direction = "vertical"
   }
-  local subheader = window.add{
-    type = "frame",
-    style = "subheader_frame"
-  }
-  subheader.style.left_margin = -12
-  subheader.style.right_margin = -12
-  subheader.style.top_margin = -12
-  subheader.style.bottom_margin = 8
-  subheader.style.horizontally_squashable = true
-  subheader.style.horizontally_stretchable = true
-  subheader = subheader.add{
-    type = "flow",
-    style = "player_input_horizontal_flow",
-    direction = "horizontal"
-  }
-  subheader.style.left_padding = 12
-  subheader.style.right_padding = 12
-  subheader.add{
-    type = "radiobutton",
-    name = "prototype",
-    state = defaults.individual == nil,
-    caption = { "ds-window.radiobutton-prototype" }
-  }
-  subheader.add{
-    type = "radiobutton",
-    name = "individual",
-    state = defaults.individual ~= nil,
-    caption = { "ds-window.radiobutton-individual" }
-  }
+  if not handlers[type].forced_individual then
+    local subheader = window.add{
+      type = "frame",
+      style = "subheader_frame"
+    }
+    subheader.style.left_margin = -12
+    subheader.style.right_margin = -12
+    subheader.style.top_margin = -12
+    subheader.style.bottom_margin = 8
+    subheader.style.horizontally_squashable = true
+    subheader.style.horizontally_stretchable = true
+    subheader = subheader.add{
+      type = "flow",
+      style = "player_input_horizontal_flow",
+      direction = "horizontal"
+    }
+    subheader.style.left_padding = 12
+    subheader.style.right_padding = 12
+    subheader.add{
+      type = "radiobutton",
+      name = "prototype",
+      state = defaults.individual == nil,
+      caption = { "ds-window.radiobutton-prototype" }
+    }
+    subheader.add{
+      type = "radiobutton",
+      name = "individual",
+      state = defaults.individual ~= nil,
+      caption = { "ds-window.radiobutton-individual" }
+    }
+  end
 
   -- only show option if entity settings supported/existant
   if handlers[type].basic_entity_settings or handlers[type].save_entity_settings then
@@ -261,7 +264,7 @@ local function update_subgui(entity, player_index)
   end
 
   -- only show option if circuit network is supported
-  if handlers[type].circuit_settings then
+  if handlers[type].circuit_settings or handlers[type].save_circuit_settings then
     window.add{
       type = "label",
       style = "caption_label",
