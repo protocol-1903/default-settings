@@ -164,6 +164,7 @@ local alt_guis = {
   ["fluid-turret"] = defines.relative_gui_type.turret_gui,
   ["turret"] = defines.relative_gui_type.turret_gui,
   ["logistic-container"] = defines.relative_gui_type.container_gui,
+  ["loader-1x1"] = defines.relative_gui_type.loader_gui
 }
 
 local function update_subgui(entity, player_index)
