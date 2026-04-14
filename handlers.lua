@@ -921,10 +921,15 @@ handlers["power-switch"] = {
   }
 }
 handlers["programmable-speaker"] = {
-  -- circuit_settings = {
-  --   circuit_condition = {comparator = "<", constant = 0},
-  --   circuit_parameters = 
-  -- },
+  circuit_settings = {
+    circuit_condition = {comparator = "<", constant = 0},
+    circuit_parameters = {
+      signal_value_is_pitch = false,
+      stop_playing_sounds = false,
+      instrument_id = 0,
+      note_id = 0
+    }
+  },
   basic_entity_settings = {
     parameters = {
       allow_polyphony = false,
