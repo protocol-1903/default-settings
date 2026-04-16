@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.1
-Date: ????
+Date: 2026-04-16
   Changes:
     - Added artillery wagon support
     - Added full logistic container support
