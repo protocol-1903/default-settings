@@ -412,6 +412,59 @@ handlers["asteroid-collector"] = {
     end
   end
 }
+handlers["container"] = {
+  forced_individual = true, -- forces settings to be per-prototype instead of global
+  circuit_settings = {
+    read_contents = true
+  },
+  save_entity_settings = function (entity, player_index)
+    local defaults = handlers.defaults(entity, player_index)
+    defaults.entity_settings = {}
+    local prototype = entity.name == "entity-ghost" and entity.ghost_prototype or entity.prototype
+    local size = prototype.get_inventory_size(defines.inventory.chest, entity.quality)
+    if entity.is_inventory_filtered(defines.inventory.chest) then
+      defaults.entity_settings.filters = {}
+      for i = 1, size do
+        defaults.entity_settings.filters[i] = entity.get_inventory_filter(i)
+      end
+    end
+    if entity.inventory_supports_bar(defines.inventory.chest) then
+      local bar = entity.get_inventory_bar(defines.inventory.chest)
+      defaults.entity_settings.bar = bar ~= size and bar or nil
+    end
+  end,
+  apply_entity_settings = function (entity, player_index)
+    local defaults = handlers.defaults(entity, player_index)
+    if entity.inventory_supports_filters(defines.inventory.chest) then
+      local prototype = entity.name == "entity-ghost" and entity.ghost_prototype or entity.prototype
+      local size = prototype.get_inventory_size(defines.inventory.chest, entity.quality)
+      defaults.entity_settings.filters = defaults.entity_settings.filters or {}
+      for i = 1, size do
+        entity.set_inventory_filter(i, defaults.entity_settings.filters[i])
+      end
+    end
+    if entity.inventory_supports_bar(defines.inventory.chest) then
+      entity.set_inventory_bar(defines.inventory.chest, defaults.entity_settings.bar)
+    end
+  end,
+  clear_entity_settings = function (entity)
+    if entity.inventory_supports_filters(defines.inventory.chest) then
+      local prototype = entity.name == "entity-ghost" and entity.ghost_prototype or entity.prototype
+      local size = prototype.get_inventory_size(defines.inventory.chest, entity.quality)
+      for i = 1, size do
+        entity.set_inventory_filter(i)
+      end
+    end
+    if entity.inventory_supports_bar(defines.inventory.chest) then
+      entity.set_inventory_bar(defines.inventory.chest)
+    end
+  end,
+  is_default = function (entity)
+    local prototype = entity.name == "entity-ghost" and entity.ghost_prototype or entity.prototype
+    return not entity.is_inventory_filtered(defines.inventory.chest) and
+      (not entity.inventory_supports_bar(defines.inventory.chest) or entity.get_inventory_bar(defines.inventory.chest) == prototype.get_inventory_size(defines.inventory.chest, entity.quality))
+  end
+}
 handlers["display-panel"] = {
   circuit_settings = {
     messages = {{}}

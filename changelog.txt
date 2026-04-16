@@ -4,6 +4,7 @@ Date: ????
   Changes:
     - Added artillery wagon support
     - Added full logistic container support
+    - Added full container support
     - Store references to each circuit setting's default value in the reference instead of generically
     - Added property for handlers of a prototype to force per-prototype settings instead of allowing global
   Bugfixes:
