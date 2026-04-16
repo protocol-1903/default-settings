@@ -1023,7 +1023,7 @@ handlers["train-stop"] = {
   },
   basic_entity_settings = {
     color = nan,
-    trains_limit = nan,
+    trains_limit = 4294967295,
     train_stop_priority = 50
   }
 }
