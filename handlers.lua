@@ -414,7 +414,7 @@ handlers["asteroid-collector"] = {
 }
 handlers["display-panel"] = {
   circuit_settings = {
-    "messages"
+    messages = {{}}
   },
   basic_entity_settings = {
     display_panel_always_show = false,
