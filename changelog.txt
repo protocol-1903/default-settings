@@ -10,6 +10,7 @@ Date: ????
     - Fixed a crash when removing circuit wires from an assembler. Resolves https://github.com/protocol-1903/default-settings/issues/11
     - Fixed settings window not showing on 1x1 loaders. Resolves https://github.com/protocol-1903/default-settings/issues/9
     - Fixed train stop entity settings not applying when built. Resolves https://github.com/protocol-1903/default-settings/issues/15
+    - Fixed display panel handling. Resolves https://github.com/protocol-1903/default-settings/issues/13
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.0
 Date: 2026-03-15

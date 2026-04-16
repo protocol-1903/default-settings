@@ -412,11 +412,17 @@ handlers["asteroid-collector"] = {
     end
   end
 }
--- handlers["display-panel"] = {
---   circuit_settings = {
---     "messages"
---   }
--- }
+handlers["display-panel"] = {
+  circuit_settings = {
+    "messages"
+  },
+  basic_entity_settings = {
+    display_panel_always_show = false,
+    display_panel_show_in_chart = false,
+    display_panel_icon = nan,
+    display_panel_text = ""
+  }
+}
 handlers["electric-turret"] = {
   circuit_settings = {
     circuit_enable_disable = false,
